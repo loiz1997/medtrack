@@ -5,6 +5,7 @@ import 'dart:convert';
 import '../services/database_helper.dart';
 import '../services/sync_service.dart';
 import '../models/patient.dart';
+import '../widgets/test_id.dart';
 
 class PatientsScreen extends StatefulWidget {
   const PatientsScreen({super.key});
@@ -51,19 +52,19 @@ class _PatientsScreenState extends State<PatientsScreen> {
               children: [
                 Text('Register new patient', style: Theme.of(ctx).textTheme.titleLarge),
                 const SizedBox(height: 16),
-                TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'Full name')),
+                TestId.field('admin_register_patient_name_input', TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'Full name'))),
                 const SizedBox(height: 12),
                 Row(children: [
                   Expanded(
-                    child: TextField(
+                    child: TestId.field('admin_register_patient_age_input', TextField(
                       controller: ageCtrl,
                       keyboardType: TextInputType.number,
                       decoration: const InputDecoration(labelText: 'Age'),
-                    ),
+                    )),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: DropdownButtonFormField<String>(
+                    child: TestId.field('admin_register_patient_gender_dropdown', DropdownButtonFormField<String>(
                       value: gender,
                       decoration: const InputDecoration(labelText: 'Gender'),
                       items: const [
@@ -72,17 +73,17 @@ class _PatientsScreenState extends State<PatientsScreen> {
                         DropdownMenuItem(value: 'Other', child: Text('Other')),
                       ],
                       onChanged: (v) => setSheetState(() => gender = v ?? 'Female'),
-                    ),
+                    )),
                   ),
                 ]),
                 const SizedBox(height: 12),
-                TextField(controller: phoneCtrl, decoration: const InputDecoration(labelText: 'Contact number')),
+                TestId.field('admin_register_patient_phone_input', TextField(controller: phoneCtrl, decoration: const InputDecoration(labelText: 'Contact number'))),
                 const SizedBox(height: 12),
-                TextField(controller: conditionCtrl, decoration: const InputDecoration(labelText: 'Reason for visit')),
+                TestId.field('admin_register_patient_reason_input', TextField(controller: conditionCtrl, decoration: const InputDecoration(labelText: 'Reason for visit'))),
                 const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
-                  child: FilledButton(
+                  child: TestId.button('admin_register_patient_submit_button', FilledButton(
                     onPressed: () async {
                       if (nameCtrl.text.trim().isEmpty || phoneCtrl.text.trim().isEmpty) return;
                       final id = await _db.nextPatientId();
@@ -108,7 +109,7 @@ class _PatientsScreenState extends State<PatientsScreen> {
                       }
                     },
                     child: const Text('Register patient'),
-                  ),
+                  )),
                 ),
               ],
             ),
@@ -168,25 +169,25 @@ class _PatientsScreenState extends State<PatientsScreen> {
         title: const Text('Patients'),
         centerTitle: false,
         actions: [
-          IconButton(
+          TestId.button('admin_import_csv_button', IconButton(
             key: const Key('admin_import_csv_button'),
             icon: const Icon(Icons.file_upload_outlined),
             tooltip: 'Import from Excel (CSV)',
             onPressed: _importFromExcelCsv,
-          ),
+          ), label: 'Import from Excel (CSV)'),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: TestId.button('admin_register_patient_fab', FloatingActionButton.extended(
         key: const Key('admin_register_patient_fab'),
         onPressed: _openRegisterSheet,
         icon: const Icon(Icons.add),
         label: const Text('Register patient'),
-      ),
+      ), label: 'Register patient'),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(12),
-            child: TextField(
+            child: TestId.field('admin_patients_search_input', TextField(
               key: const Key('admin_patients_search_input'),
               controller: _searchController,
               onChanged: (_) => _load(),
@@ -195,17 +196,17 @@ class _PatientsScreenState extends State<PatientsScreen> {
                 hintText: 'Search by name, ID, or condition',
                 border: OutlineInputBorder(),
               ),
-            ),
+            )),
           ),
           Expanded(
             child: _patients.isEmpty
                 ? const Center(child: Text('No patients found'))
-                : ListView.builder(
+                : TestId.group('admin_patients_list', ListView.builder(
                     key: const Key('admin_patients_list'),
                     itemCount: _patients.length,
                     itemBuilder: (context, i) {
                       final p = _patients[i];
-                      return ListTile(
+                      return TestId.group('admin_patient_row_${p.id}', ListTile(
                         key: Key('admin_patient_row_${p.id}'),
                         leading: CircleAvatar(child: Text(p.fullName.isNotEmpty ? p.fullName[0] : '?')),
                         title: Text(p.fullName, style: TextStyle(color: p.isActive ? null : Colors.grey)),
@@ -215,7 +216,7 @@ class _PatientsScreenState extends State<PatientsScreen> {
                           children: [
                             Text(p.id, style: const TextStyle(fontFamily: 'monospace', fontSize: 12)),
                             const SizedBox(width: 8),
-                            Container(
+                            TestId.group('admin_patient_status_badge_${p.id}', Container(
                               key: Key('admin_patient_status_badge_${p.id}'),
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                               decoration: BoxDecoration(
@@ -230,18 +231,18 @@ class _PatientsScreenState extends State<PatientsScreen> {
                                   color: p.isActive ? Colors.green.shade800 : Colors.grey.shade700,
                                 ),
                               ),
-                            ),
+                            )),
                             const SizedBox(width: 8),
-                            Switch(
+                            TestId.group('admin_patient_active_toggle_${p.id}', Switch(
                               key: Key('admin_patient_active_toggle_${p.id}'),
                               value: p.isActive,
                               onChanged: (v) => _toggleActive(p, v),
-                            ),
+                            )),
                           ],
                         ),
-                      );
+                      ));
                     },
-                  ),
+                  )),
           ),
         ],
       ),

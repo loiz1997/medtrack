@@ -4,6 +4,7 @@ import '../services/sync_service.dart';
 import '../models/clinic_transaction.dart';
 import 'all_patients_by_doctor_screen.dart';
 import 'active_doctors_screen.dart';
+import '../widgets/test_id.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -36,14 +37,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
         title: const Text('Dashboard'),
         centerTitle: false,
         actions: [
-          IconButton(
+          TestId.button('admin_sync_now_button', IconButton(
             key: const Key('admin_sync_now_button'),
             icon: _syncing
                 ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
                 : const Icon(Icons.cloud_sync_outlined),
             tooltip: 'Sync now',
             onPressed: _syncing ? null : _syncNow,
-          ),
+          ), label: 'Sync now'),
         ],
       ),
       body: FutureBuilder(
@@ -71,7 +72,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
                 children: [
-                  _StatCard(
+                  TestId.group('admin_dashboard_total_patients_card', _StatCard(
                     key: const Key('admin_dashboard_total_patients_card'),
                     label: 'Total patients',
                     value: '${patients.length}',
@@ -79,8 +80,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute(builder: (_) => const AllPatientsByDoctorScreen()),
                     ),
-                  ),
-                  _StatCard(
+                  )),
+                  TestId.group('admin_dashboard_active_doctors_card', _StatCard(
                     key: const Key('admin_dashboard_active_doctors_card'),
                     label: 'Active doctors',
                     value: '${activeDoctors.length}',
@@ -88,27 +89,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute(builder: (_) => const ActiveDoctorsScreen()),
                     ),
-                  ),
-                  _StatCard(
+                  )),
+                  TestId.group('admin_dashboard_pending_card', _StatCard(
                     key: const Key('admin_dashboard_pending_card'),
                     label: 'Pending transactions',
                     value: '$pending',
                     icon: Icons.schedule,
                     color: Colors.orange,
-                  ),
-                  _StatCard(
+                  )),
+                  TestId.group('admin_dashboard_revenue_card', _StatCard(
                     key: const Key('admin_dashboard_revenue_card'),
                     label: "Today's revenue",
                     value: '₱${todayRevenue.toStringAsFixed(0)}',
                     icon: Icons.trending_up,
                     color: Colors.teal,
-                  ),
+                  )),
                 ],
               ),
               const SizedBox(height: 24),
               Text('Recent transactions', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
-              ...transactions.take(5).map((t) => Card(
+              ...transactions.take(5).map((t) => TestId.group('admin_recent_transaction_${t.id}', Card(
                     key: Key('admin_recent_transaction_${t.id}'),
                     margin: const EdgeInsets.only(bottom: 8),
                     child: ListTile(
@@ -119,7 +120,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         backgroundColor: Color(t.status.colorValue),
                       ),
                     ),
-                  )),
+                  ))),
             ],
           );
         },

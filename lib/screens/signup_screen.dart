@@ -5,6 +5,7 @@ import '../models/patient.dart';
 import '../models/doctor.dart';
 import 'patient_home_screen.dart';
 import 'login_screen.dart';
+import '../widgets/test_id.dart';
 
 /// Lets a patient or doctor create their own account, instead of requiring
 /// front-desk staff to register them first.
@@ -119,10 +120,10 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
           ],
         ),
         actions: [
-          FilledButton(
+          TestId.button('signup_credentials_continue_button', FilledButton(
             onPressed: () => Navigator.of(ctx).pop(),
             child: const Text('Got it, take me to login'),
-          ),
+          ), label: 'Got it, take me to login'),
         ],
       ),
     );
@@ -148,9 +149,9 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
                 children: [
                   TabBar(
                     controller: _tabController,
-                    tabs: const [
-                      Tab(icon: Icon(Icons.person_outline), text: 'I\'m a patient'),
-                      Tab(icon: Icon(Icons.medical_services_outlined), text: 'I\'m a doctor'),
+                    tabs: [
+                      TestId.group('signup_patient_tab', Tab(icon: Icon(Icons.person_outline), text: 'I\'m a patient')),
+                      TestId.group('signup_doctor_tab', Tab(icon: Icon(Icons.medical_services_outlined), text: 'I\'m a doctor')),
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -174,24 +175,24 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
                         key: _formKeyPatient,
                         child: Column(
                           children: [
-                            TextFormField(
+                            TestId.field('signup_patient_name_input', TextFormField(
                               controller: _nameCtrl,
                               decoration: const InputDecoration(labelText: 'Full name', border: OutlineInputBorder()),
                               validator: (v) => (v == null || v.trim().isEmpty) ? 'Please enter your name' : null,
-                            ),
+                            )),
                             const SizedBox(height: 12),
                             Row(
                               children: [
                                 Expanded(
-                                  child: TextFormField(
+                                  child: TestId.field('signup_patient_age_input', TextFormField(
                                     controller: _ageCtrl,
                                     keyboardType: TextInputType.number,
                                     decoration: const InputDecoration(labelText: 'Age', border: OutlineInputBorder()),
-                                  ),
+                                  )),
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
-                                  child: DropdownButtonFormField<String>(
+                                  child: TestId.field('signup_patient_gender_dropdown', DropdownButtonFormField<String>(
                                     value: _gender,
                                     decoration: const InputDecoration(labelText: 'Gender', border: OutlineInputBorder()),
                                     items: const [
@@ -200,12 +201,12 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
                                       DropdownMenuItem(value: 'Other', child: Text('Other')),
                                     ],
                                     onChanged: (v) => setState(() => _gender = v ?? 'Female'),
-                                  ),
+                                  )),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 12),
-                            TextFormField(
+                            TestId.field('signup_patient_phone_input', TextFormField(
                               controller: _phoneCtrl,
                               keyboardType: TextInputType.phone,
                               decoration: const InputDecoration(
@@ -214,22 +215,22 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
                                 border: OutlineInputBorder(),
                               ),
                               validator: (v) => (v == null || v.trim().isEmpty) ? 'Please enter a phone number' : null,
-                            ),
+                            )),
                             const SizedBox(height: 12),
-                            TextFormField(
+                            TestId.field('signup_patient_reason_input', TextFormField(
                               controller: _conditionCtrl,
                               decoration: const InputDecoration(labelText: 'Reason for visit (optional)', border: OutlineInputBorder()),
-                            ),
+                            )),
                             const SizedBox(height: 20),
                             SizedBox(
                               width: double.infinity,
                               height: 48,
-                              child: FilledButton(
+                              child: TestId.button('signup_patient_submit_button', FilledButton(
                                 onPressed: _loading ? null : _signUpPatient,
                                 child: _loading
                                     ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                                     : const Text('Create my account'),
-                              ),
+                              ), label: 'Create my account'),
                             ),
                           ],
                         ),
@@ -239,36 +240,36 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
                         key: _formKeyDoctor,
                         child: Column(
                           children: [
-                            TextFormField(
+                            TestId.field('signup_doctor_name_input', TextFormField(
                               controller: _doctorNameCtrl,
                               decoration: const InputDecoration(labelText: 'Full name', border: OutlineInputBorder()),
                               validator: (v) => (v == null || v.trim().isEmpty) ? 'Please enter your name' : null,
-                            ),
+                            )),
                             const SizedBox(height: 12),
-                            TextFormField(
+                            TestId.field('signup_doctor_specialty_input', TextFormField(
                               controller: _specialtyCtrl,
                               decoration: const InputDecoration(labelText: 'Specialty', border: OutlineInputBorder()),
                               validator: (v) => (v == null || v.trim().isEmpty) ? 'Please enter your specialty' : null,
-                            ),
+                            )),
                             const SizedBox(height: 12),
-                            TextFormField(
+                            TestId.field('signup_doctor_schedule_input', TextFormField(
                               controller: _scheduleCtrl,
                               decoration: const InputDecoration(
                                 labelText: 'Schedule (optional)',
                                 hintText: 'e.g. Mon-Fri, 9AM-5PM',
                                 border: OutlineInputBorder(),
                               ),
-                            ),
+                            )),
                             const SizedBox(height: 20),
                             SizedBox(
                               width: double.infinity,
                               height: 48,
-                              child: FilledButton(
+                              child: TestId.button('signup_doctor_submit_button', FilledButton(
                                 onPressed: _loading ? null : _signUpDoctor,
                                 child: _loading
                                     ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                                     : const Text('Create my account'),
-                              ),
+                              ), label: 'Create my account'),
                             ),
                           ],
                         ),

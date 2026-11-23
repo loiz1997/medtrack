@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/database_helper.dart';
 import '../services/sync_service.dart';
 import '../models/doctor.dart';
+import '../widgets/test_id.dart';
 
 /// The admin's doctor directory — the only place a doctor account can be
 /// turned active/inactive. Add-doctor stays here too, since that's an
@@ -58,27 +59,27 @@ class _DoctorsScreenState extends State<DoctorsScreen> {
           children: [
             Text('Add doctor', style: Theme.of(ctx).textTheme.titleLarge),
             const SizedBox(height: 16),
-            TextField(
+            TestId.field('admin_add_doctor_name_input', TextField(
               key: const Key('admin_add_doctor_name_input'),
               controller: nameCtrl,
               decoration: const InputDecoration(labelText: 'Full name'),
-            ),
+            )),
             const SizedBox(height: 12),
-            TextField(
+            TestId.field('admin_add_doctor_specialty_input', TextField(
               key: const Key('admin_add_doctor_specialty_input'),
               controller: specialtyCtrl,
               decoration: const InputDecoration(labelText: 'Specialty'),
-            ),
+            )),
             const SizedBox(height: 12),
-            TextField(
+            TestId.field('admin_add_doctor_schedule_input', TextField(
               key: const Key('admin_add_doctor_schedule_input'),
               controller: scheduleCtrl,
               decoration: const InputDecoration(labelText: 'Schedule'),
-            ),
+            )),
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
-              child: FilledButton(
+              child: TestId.button('admin_add_doctor_submit_button', FilledButton(
                 key: const Key('admin_add_doctor_submit_button'),
                 onPressed: () async {
                   if (nameCtrl.text.trim().isEmpty || specialtyCtrl.text.trim().isEmpty) return;
@@ -94,7 +95,7 @@ class _DoctorsScreenState extends State<DoctorsScreen> {
                   _load();
                 },
                 child: const Text('Add doctor'),
-              ),
+              ), label: 'Add doctor'),
             ),
           ],
         ),
@@ -107,21 +108,21 @@ class _DoctorsScreenState extends State<DoctorsScreen> {
     return Scaffold(
       key: const Key('admin_doctors_screen'),
       appBar: AppBar(title: const Text('Doctors'), centerTitle: false),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: TestId.button('admin_add_doctor_fab', FloatingActionButton.extended(
         key: const Key('admin_add_doctor_fab'),
         onPressed: _openAddSheet,
         icon: const Icon(Icons.add),
         label: const Text('Add doctor'),
-      ),
+      ), label: 'Add doctor'),
       body: _doctors.isEmpty
           ? const Center(child: Text('No doctors yet'))
-          : ListView.builder(
+          : TestId.group('admin_doctors_list', ListView.builder(
               key: const Key('admin_doctors_list'),
               padding: const EdgeInsets.all(12),
               itemCount: _doctors.length,
               itemBuilder: (context, i) {
                 final d = _doctors[i];
-                return Card(
+                return TestId.group('admin_doctor_row_${d.id}', Card(
                   key: Key('admin_doctor_row_${d.id}'),
                   margin: const EdgeInsets.only(bottom: 8),
                   child: ListTile(
@@ -134,7 +135,7 @@ class _DoctorsScreenState extends State<DoctorsScreen> {
                       children: [
                         Text(d.id, style: const TextStyle(fontFamily: 'monospace', fontSize: 12)),
                         const SizedBox(width: 8),
-                        Container(
+                        TestId.group('admin_doctor_status_badge_${d.id}', Container(
                           key: Key('admin_doctor_status_badge_${d.id}'),
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
@@ -149,19 +150,19 @@ class _DoctorsScreenState extends State<DoctorsScreen> {
                               color: d.isActive ? Colors.green.shade800 : Colors.grey.shade700,
                             ),
                           ),
-                        ),
+                        )),
                         const SizedBox(width: 8),
-                        Switch(
+                        TestId.group('admin_doctor_active_toggle_${d.id}', Switch(
                           key: Key('admin_doctor_active_toggle_${d.id}'),
                           value: d.isActive,
                           onChanged: (v) => _toggleActive(d, v),
-                        ),
+                        )),
                       ],
                     ),
                   ),
-                );
+                ));
               },
-            ),
+            )),
     );
   }
 }

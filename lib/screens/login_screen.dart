@@ -4,6 +4,7 @@ import '../models/doctor.dart';
 import 'patient_home_screen.dart';
 import 'signup_screen.dart';
 import 'admin_home_screen.dart';
+import '../widgets/test_id.dart';
 
 /// A friendly, three-tab login screen: Patient, Doctor, or Admin.
 ///
@@ -160,15 +161,15 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                   TabBar(
                     key: const Key('login_tab_bar'),
                     controller: _tabController,
-                    tabs: const [
-                      Tab(key: Key('login_tab_patient'), icon: Icon(Icons.person_outline), text: 'Patient'),
-                      Tab(key: Key('login_tab_doctor'), icon: Icon(Icons.medical_services_outlined), text: 'Doctor'),
-                      Tab(key: Key('login_tab_admin'), icon: Icon(Icons.admin_panel_settings_outlined), text: 'Admin'),
+                    tabs: [
+                      TestId.group('login_tab_patient', Tab(key: Key('login_tab_patient'), icon: Icon(Icons.person_outline), text: 'Patient')),
+                      TestId.group('login_tab_doctor', Tab(key: Key('login_tab_doctor'), icon: Icon(Icons.medical_services_outlined), text: 'Doctor')),
+                      TestId.group('login_tab_admin', Tab(key: Key('login_tab_admin'), icon: Icon(Icons.admin_panel_settings_outlined), text: 'Admin')),
                     ],
                   ),
                   const SizedBox(height: 20),
                   if (_error != null)
-                    Container(
+                    TestId.group('login_error_banner', Container(
                       key: const Key('login_error_banner'),
                       width: double.infinity,
                       padding: const EdgeInsets.all(12),
@@ -185,14 +186,14 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                           Expanded(child: Text(_error!, style: TextStyle(color: Colors.red.shade700, fontSize: 13))),
                         ],
                       ),
-                    ),
+                    )),
                   IndexedStack(
                     index: _tabController.index,
                     children: [
                       // ── Patient login ──
                       Column(
                         children: [
-                          TextField(
+                          TestId.field('login_patient_id_input', TextField(
                             key: const Key('login_patient_id_input'),
                             controller: _patientIdCtrl,
                             textCapitalization: TextCapitalization.characters,
@@ -202,9 +203,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               prefixIcon: Icon(Icons.badge_outlined),
                               border: OutlineInputBorder(),
                             ),
-                          ),
+                          )),
                           const SizedBox(height: 12),
-                          TextField(
+                          TestId.field('login_patient_phone_input', TextField(
                             key: const Key('login_patient_phone_input'),
                             controller: _patientPhoneCtrl,
                             keyboardType: TextInputType.phone,
@@ -214,7 +215,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               prefixIcon: Icon(Icons.phone_outlined),
                               border: OutlineInputBorder(),
                             ),
-                          ),
+                          )),
                           const SizedBox(height: 20),
                           _testableButton(
                             testId: 'login_patient_submit_button',
@@ -235,7 +236,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                       // ── Doctor login ──
                       Column(
                         children: [
-                          TextField(
+                          TestId.field('login_doctor_id_input', TextField(
                             key: const Key('login_doctor_id_input'),
                             controller: _doctorIdCtrl,
                             textCapitalization: TextCapitalization.characters,
@@ -245,9 +246,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               prefixIcon: Icon(Icons.badge_outlined),
                               border: OutlineInputBorder(),
                             ),
-                          ),
+                          )),
                           const SizedBox(height: 12),
-                          TextField(
+                          TestId.field('login_doctor_code_input', TextField(
                             key: const Key('login_doctor_code_input'),
                             controller: _doctorCodeCtrl,
                             obscureText: true,
@@ -257,7 +258,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               prefixIcon: Icon(Icons.lock_outline),
                               border: OutlineInputBorder(),
                             ),
-                          ),
+                          )),
                           const SizedBox(height: 20),
                           _testableButton(
                             testId: 'login_doctor_submit_button',
@@ -272,7 +273,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                       // ── Admin login ──
                       Column(
                         children: [
-                          TextField(
+                          TestId.field('login_admin_username_input', TextField(
                             key: const Key('login_admin_username_input'),
                             controller: _adminUserCtrl,
                             decoration: const InputDecoration(
@@ -280,9 +281,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               prefixIcon: Icon(Icons.person_outline),
                               border: OutlineInputBorder(),
                             ),
-                          ),
+                          )),
                           const SizedBox(height: 12),
-                          TextField(
+                          TestId.field('login_admin_password_input', TextField(
                             key: const Key('login_admin_password_input'),
                             controller: _adminPassCtrl,
                             obscureText: true,
@@ -291,7 +292,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               prefixIcon: Icon(Icons.lock_outline),
                               border: OutlineInputBorder(),
                             ),
-                          ),
+                          )),
                           const SizedBox(height: 20),
                           _testableButton(
                             testId: 'login_admin_submit_button',

@@ -6,6 +6,7 @@ import '../services/database_helper.dart';
 import 'login_screen.dart';
 import 'patient_edit_profile_screen.dart';
 import 'book_appointment_screen.dart';
+import '../widgets/test_id.dart';
 
 /// What a patient sees after logging in — their own info and appointment
 /// history only, not the full staff dashboard (patients shouldn't see other
@@ -75,23 +76,23 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
         title: const Text('My MedTrack'),
         centerTitle: false,
         actions: [
-          IconButton(
+          TestId.button('patient_logout_button', IconButton(
             key: const Key('patient_logout_button'),
             icon: const Icon(Icons.logout),
             tooltip: 'Log out',
             onPressed: _logout,
-          ),
+          ), label: 'Log out'),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: TestId.button('patient_book_appointment_fab', FloatingActionButton.extended(
         key: const Key('patient_book_appointment_fab'),
         onPressed: _openBookAppointment,
         icon: const Icon(Icons.calendar_month_outlined),
         label: const Text('Book appointment'),
-      ),
+      ), label: 'Book appointment'),
       body: RefreshIndicator(
         onRefresh: _load,
-        child: ListView(
+        child: TestId.group('patient_home_list', ListView(
           key: const Key('patient_home_list'),
           padding: const EdgeInsets.all(16),
           children: [
@@ -112,12 +113,12 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                         ],
                       ),
                     ),
-                    IconButton(
+                    TestId.button('patient_edit_profile_button', IconButton(
                       key: const Key('patient_edit_profile_button'),
                       icon: const Icon(Icons.edit_outlined),
                       tooltip: 'Edit profile',
                       onPressed: _openEditProfile,
-                    ),
+                    ), label: 'Edit profile'),
                   ],
                 ),
               ),
@@ -131,21 +132,21 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                 child: Center(child: Text('No appointments yet — tap "Book appointment" to get started.')),
               )
             else
-              ..._visits.map((t) => Card(
+              ..._visits.map((t) => TestId.group('patient_appointment_card_${t.id}', Card(
                     key: Key('patient_appointment_card_${t.id}'),
                     margin: const EdgeInsets.only(bottom: 8),
                     child: ListTile(
                       title: Text(t.type),
                       subtitle: Text('${t.doctorName} · ${t.visitDate.toString().split(' ').first}'),
-                      trailing: Chip(
+                      trailing: TestId.group('patient_appointment_status_${t.id}', Chip(
                         key: Key('patient_appointment_status_${t.id}'),
                         label: Text(t.status.label, style: const TextStyle(fontSize: 11, color: Colors.white)),
                         backgroundColor: _statusColor(t.status),
-                      ),
+                      )),
                     ),
-                  )),
+                  ))),
           ],
-        ),
+        )),
       ),
     );
   }
@@ -159,12 +160,12 @@ class _ProfileAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final path = patient.photoPath;
     if (path != null && path.isNotEmpty && File(path).existsSync()) {
-      return CircleAvatar(key: const Key('patient_profile_photo'), radius: 28, backgroundImage: FileImage(File(path)));
+      return TestId.group('patient_profile_photo', CircleAvatar(key: const Key('patient_profile_photo'), radius: 28, backgroundImage: FileImage(File(path))));
     }
-    return CircleAvatar(
+    return TestId.group('patient_profile_photo_placeholder', CircleAvatar(
       key: const Key('patient_profile_photo_placeholder'),
       radius: 28,
       child: Text(patient.fullName.isNotEmpty ? patient.fullName[0] : '?'),
-    );
+    ));
   }
 }

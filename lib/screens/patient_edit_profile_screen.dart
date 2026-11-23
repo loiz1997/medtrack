@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import '../models/patient.dart';
 import '../services/database_helper.dart';
 import '../services/sync_service.dart';
+import '../widgets/test_id.dart';
 
 /// Lets the logged-in patient change their own name, age, phone, and photo.
 /// Every field has a Key set — the Flutter equivalent of a web `data-test-id`
@@ -93,7 +94,7 @@ class _PatientEditProfileScreenState extends State<PatientEditProfileScreen> {
                 Positioned(
                   bottom: 0,
                   right: 0,
-                  child: InkWell(
+                  child: TestId.group('patient_photo_upload_button', InkWell(
                     key: const Key('patient_photo_upload_button'),
                     onTap: _pickPhoto,
                     child: Container(
@@ -105,31 +106,31 @@ class _PatientEditProfileScreenState extends State<PatientEditProfileScreen> {
                       ),
                       child: const Icon(Icons.camera_alt, size: 16, color: Colors.white),
                     ),
-                  ),
+                  )),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 24),
-          TextField(
+          TestId.field('patient_edit_name_input', TextField(
             key: const Key('patient_edit_name_input'),
             controller: _nameCtrl,
             decoration: const InputDecoration(labelText: 'Full name', border: OutlineInputBorder()),
-          ),
+          )),
           const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
-                child: TextField(
+                child: TestId.field('patient_edit_age_input', TextField(
                   key: const Key('patient_edit_age_input'),
                   controller: _ageCtrl,
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(labelText: 'Age', border: OutlineInputBorder()),
-                ),
+                )),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: DropdownButtonFormField<String>(
+                child: TestId.field('patient_edit_gender_dropdown', DropdownButtonFormField<String>(
                   key: const Key('patient_edit_gender_dropdown'),
                   value: _gender,
                   decoration: const InputDecoration(labelText: 'Gender', border: OutlineInputBorder()),
@@ -139,12 +140,12 @@ class _PatientEditProfileScreenState extends State<PatientEditProfileScreen> {
                     DropdownMenuItem(value: 'Other', child: Text('Other')),
                   ],
                   onChanged: (v) => setState(() => _gender = v ?? 'Female'),
-                ),
+                )),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          TextField(
+          TestId.field('patient_edit_phone_input', TextField(
             key: const Key('patient_edit_phone_input'),
             controller: _phoneCtrl,
             keyboardType: TextInputType.phone,
@@ -153,18 +154,18 @@ class _PatientEditProfileScreenState extends State<PatientEditProfileScreen> {
               helperText: 'You use this to log in — changing it changes your login too',
               border: OutlineInputBorder(),
             ),
-          ),
+          )),
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
             height: 48,
-            child: FilledButton(
+            child: TestId.button('patient_save_profile_button', FilledButton(
               key: const Key('patient_save_profile_button'),
               onPressed: _saving ? null : _save,
               child: _saving
                   ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                   : const Text('Save changes'),
-            ),
+            ), label: 'Save changes'),
           ),
         ],
       ),

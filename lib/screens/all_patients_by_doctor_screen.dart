@@ -3,6 +3,7 @@ import '../services/database_helper.dart';
 import '../models/patient.dart';
 import '../models/doctor.dart';
 import '../models/clinic_transaction.dart';
+import '../widgets/test_id.dart';
 
 /// Opened by tapping "Total patients" on the dashboard — shows every
 /// patient in the clinic, grouped by which doctor they've seen.
@@ -72,7 +73,7 @@ class _AllPatientsByDoctorScreenState extends State<AllPatientsByDoctorScreen> {
                       child: Text('No patients yet', style: TextStyle(color: Colors.grey.shade500)),
                     )
                   else
-                    ...(_patientsByDoctor[doctor.id] ?? []).map((p) => Card(
+                    ...(_patientsByDoctor[doctor.id] ?? []).map((p) => TestId.group('all_patients_row_${doctor.id}_${p.id}', Card(
                           key: Key('all_patients_row_${doctor.id}_${p.id}'),
                           margin: const EdgeInsets.only(bottom: 6),
                           child: ListTile(
@@ -82,13 +83,13 @@ class _AllPatientsByDoctorScreenState extends State<AllPatientsByDoctorScreen> {
                             subtitle: Text(p.condition),
                             trailing: Text(p.id, style: const TextStyle(fontFamily: 'monospace', fontSize: 11)),
                           ),
-                        )),
+                        ))),
                   const SizedBox(height: 16),
                 ],
                 if (_unassigned.isNotEmpty) ...[
                   Text('Not yet booked with a doctor', style: Theme.of(context).textTheme.titleMedium),
                   const SizedBox(height: 8),
-                  ..._unassigned.map((p) => Card(
+                  ..._unassigned.map((p) => TestId.group('all_patients_unassigned_${p.id}', Card(
                         key: Key('all_patients_unassigned_${p.id}'),
                         margin: const EdgeInsets.only(bottom: 6),
                         child: ListTile(
@@ -98,7 +99,7 @@ class _AllPatientsByDoctorScreenState extends State<AllPatientsByDoctorScreen> {
                           subtitle: Text(p.condition),
                           trailing: Text(p.id, style: const TextStyle(fontFamily: 'monospace', fontSize: 11)),
                         ),
-                      )),
+                      ))),
                 ],
               ],
             ),

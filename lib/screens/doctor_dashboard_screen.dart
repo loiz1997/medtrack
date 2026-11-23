@@ -4,6 +4,7 @@ import '../models/clinic_transaction.dart';
 import '../services/database_helper.dart';
 import 'all_patients_by_doctor_screen.dart';
 import 'active_doctors_screen.dart';
+import '../widgets/test_id.dart';
 
 /// The doctor's own dashboard. "Total patients" and "Active doctors" are
 /// clinic-wide overview numbers, and both are tappable — they open a
@@ -50,7 +51,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
                 children: [
-                  _StatCard(
+                  TestId.group('doctor_dashboard_total_patients_card', _StatCard(
                     key: const Key('doctor_dashboard_total_patients_card'),
                     label: 'Total patients',
                     value: '$totalPatients',
@@ -58,8 +59,8 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute(builder: (_) => const AllPatientsByDoctorScreen()),
                     ),
-                  ),
-                  _StatCard(
+                  )),
+                  TestId.group('doctor_dashboard_active_doctors_card', _StatCard(
                     key: const Key('doctor_dashboard_active_doctors_card'),
                     label: 'Active doctors',
                     value: '$activeDoctors',
@@ -67,21 +68,21 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute(builder: (_) => const ActiveDoctorsScreen()),
                     ),
-                  ),
-                  _StatCard(
+                  )),
+                  TestId.group('doctor_dashboard_pending_card', _StatCard(
                     key: const Key('doctor_dashboard_pending_card'),
                     label: 'My pending requests',
                     value: '$pending',
                     icon: Icons.schedule,
                     color: Colors.orange,
-                  ),
-                  _StatCard(
+                  )),
+                  TestId.group('doctor_dashboard_my_appointments_card', _StatCard(
                     key: const Key('doctor_dashboard_my_appointments_card'),
                     label: 'My total appointments',
                     value: '${myAppointments.length}',
                     icon: Icons.event_note_outlined,
                     color: Colors.teal,
-                  ),
+                  )),
                 ],
               ),
             ],

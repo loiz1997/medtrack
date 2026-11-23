@@ -4,6 +4,7 @@ import '../services/sync_service.dart';
 import '../models/clinic_transaction.dart';
 import '../models/patient.dart';
 import '../models/doctor.dart';
+import '../widgets/test_id.dart';
 
 class TransactionsScreen extends StatefulWidget {
   const TransactionsScreen({super.key});
@@ -59,31 +60,31 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
               children: [
                 Text('Log transaction', style: Theme.of(ctx).textTheme.titleLarge),
                 const SizedBox(height: 16),
-                DropdownButtonFormField<Patient>(
+                TestId.field('admin_log_transaction_patient_dropdown', DropdownButtonFormField<Patient>(
                   decoration: const InputDecoration(labelText: 'Patient'),
                   items: patients
                       .map((p) => DropdownMenuItem(value: p, child: Text('${p.fullName} (${p.id})')))
                       .toList(),
                   onChanged: (v) => setSheetState(() => selectedPatient = v),
-                ),
+                )),
                 const SizedBox(height: 12),
-                DropdownButtonFormField<Doctor>(
+                TestId.field('admin_log_transaction_doctor_dropdown', DropdownButtonFormField<Doctor>(
                   decoration: const InputDecoration(labelText: 'Doctor'),
                   items: doctors.map((d) => DropdownMenuItem(value: d, child: Text(d.fullName))).toList(),
                   onChanged: (v) => setSheetState(() => selectedDoctor = v),
-                ),
+                )),
                 const SizedBox(height: 12),
-                TextField(controller: typeCtrl, decoration: const InputDecoration(labelText: 'Transaction type')),
+                TestId.field('admin_log_transaction_type_input', TextField(controller: typeCtrl, decoration: const InputDecoration(labelText: 'Transaction type'))),
                 const SizedBox(height: 12),
-                TextField(
+                TestId.field('admin_log_transaction_amount_input', TextField(
                   controller: amountCtrl,
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(labelText: 'Amount (₱)'),
-                ),
+                )),
                 const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
-                  child: FilledButton(
+                  child: TestId.button('admin_log_transaction_submit_button', FilledButton(
                     onPressed: () async {
                       if (selectedPatient == null || selectedDoctor == null) return;
                       final id = await _db.nextTransactionId();
@@ -103,7 +104,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                       _load();
                     },
                     child: const Text('Log transaction'),
-                  ),
+                  ), label: 'Log transaction'),
                 ),
               ],
             ),
@@ -127,22 +128,22 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     return Scaffold(
       key: const Key('admin_transactions_screen'),
       appBar: AppBar(title: const Text('Transactions'), centerTitle: false),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: TestId.button('admin_log_transaction_fab', FloatingActionButton.extended(
         key: const Key('admin_log_transaction_fab'),
         onPressed: _openLogSheet,
         icon: const Icon(Icons.add),
         label: const Text('Log transaction'),
-      ),
+      ), label: 'Log transaction'),
       body: _transactions.isEmpty
           ? const Center(child: Text('No transactions logged yet'))
-          : ListView.builder(
+          : TestId.group('admin_transactions_list', ListView.builder(
               key: const Key('admin_transactions_list'),
               padding: const EdgeInsets.all(12),
               itemCount: _transactions.length,
               itemBuilder: (context, i) {
                 final t = _transactions[i];
                 final completed = t.status == TxStatus.completed;
-                return Card(
+                return TestId.group('admin_transaction_row_${t.id}', Card(
                   key: Key('admin_transaction_row_${t.id}'),
                   margin: const EdgeInsets.only(bottom: 8),
                   child: ListTile(
@@ -166,20 +167,20 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                         ),
                         if (!completed) ...[
                           const SizedBox(width: 8),
-                          IconButton(
+                          TestId.button('admin_approve_transaction_${t.id}', IconButton(
                             key: Key('admin_approve_transaction_${t.id}'),
                             icon: const Icon(Icons.check_circle_outline),
                             color: Colors.green,
                             tooltip: 'Mark completed',
                             onPressed: () => _approve(t.id),
-                          ),
+                          ), label: 'Mark completed'),
                         ],
                       ],
                     ),
                   ),
-                );
+                ));
               },
-            ),
+            )),
     );
   }
 }

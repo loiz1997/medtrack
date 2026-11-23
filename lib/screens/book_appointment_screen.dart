@@ -4,6 +4,7 @@ import '../models/doctor.dart';
 import '../models/clinic_transaction.dart';
 import '../services/database_helper.dart';
 import '../services/sync_service.dart';
+import '../widgets/test_id.dart';
 
 /// Lets a patient request an appointment with any active doctor. The
 /// request starts as "Pending" — the doctor accepts or declines it from
@@ -87,7 +88,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                   children: [
                     Text('Choose a doctor', style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 8),
-                    ..._doctors.map((d) => Card(
+                    ..._doctors.map((d) => TestId.group('doctor_option_${d.id}', Card(
                           key: Key('doctor_option_${d.id}'),
                           margin: const EdgeInsets.only(bottom: 8),
                           color: _selectedDoctor?.id == d.id
@@ -101,27 +102,27 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                             trailing: _selectedDoctor?.id == d.id ? const Icon(Icons.check_circle) : null,
                             onTap: () => setState(() => _selectedDoctor = d),
                           ),
-                        )),
+                        ))),
                     const SizedBox(height: 16),
-                    TextField(
+                    TestId.field('appointment_reason_input', TextField(
                       key: const Key('appointment_reason_input'),
                       controller: _reasonCtrl,
                       decoration: const InputDecoration(
                         labelText: 'Reason for visit',
                         border: OutlineInputBorder(),
                       ),
-                    ),
+                    )),
                     const SizedBox(height: 24),
                     SizedBox(
                       width: double.infinity,
                       height: 48,
-                      child: FilledButton(
+                      child: TestId.button('submit_appointment_button', FilledButton(
                         key: const Key('submit_appointment_button'),
                         onPressed: _submitting ? null : _submit,
                         child: _submitting
                             ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                             : const Text('Request appointment'),
-                      ),
+                      ), label: 'Request appointment'),
                     ),
                   ],
                 ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/database_helper.dart';
 import '../models/doctor.dart';
+import '../widgets/test_id.dart';
 
 /// Opened by tapping "Active doctors" on the dashboard.
 class ActiveDoctorsScreen extends StatefulWidget {
@@ -43,7 +44,7 @@ class _ActiveDoctorsScreenState extends State<ActiveDoctorsScreen> {
                   itemCount: _doctors.length,
                   itemBuilder: (context, i) {
                     final d = _doctors[i];
-                    return Card(
+                    return TestId.group('active_doctor_row_${d.id}', Card(
                       key: Key('active_doctor_row_${d.id}'),
                       margin: const EdgeInsets.only(bottom: 8),
                       child: ListTile(
@@ -53,7 +54,7 @@ class _ActiveDoctorsScreenState extends State<ActiveDoctorsScreen> {
                         isThreeLine: true,
                         trailing: Text(d.id, style: const TextStyle(fontFamily: 'monospace', fontSize: 12)),
                       ),
-                    );
+                    ));
                   },
                 ),
     );

@@ -3,6 +3,7 @@ import '../models/doctor.dart';
 import '../models/clinic_transaction.dart';
 import '../services/database_helper.dart';
 import '../services/sync_service.dart';
+import '../widgets/test_id.dart';
 
 /// Where a doctor manages incoming appointment requests: accept or decline
 /// a pending one, and mark an accepted one as completed once the visit
@@ -57,13 +58,13 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen> {
               ? const Center(child: Text('No appointments yet'))
               : RefreshIndicator(
                   onRefresh: _load,
-                  child: ListView.builder(
+                  child: TestId.group('doctor_appointments_list', ListView.builder(
                     key: const Key('doctor_appointments_list'),
                     padding: const EdgeInsets.all(12),
                     itemCount: _appointments.length,
                     itemBuilder: (context, i) {
                       final t = _appointments[i];
-                      return Card(
+                      return TestId.group('doctor_appointment_card_${t.id}', Card(
                         key: Key('doctor_appointment_card_${t.id}'),
                         margin: const EdgeInsets.only(bottom: 8),
                         child: Padding(
@@ -83,11 +84,11 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen> {
                                       ],
                                     ),
                                   ),
-                                  Chip(
+                                  TestId.group('doctor_appointment_status_${t.id}', Chip(
                                     key: Key('doctor_appointment_status_${t.id}'),
                                     label: Text(t.status.label, style: const TextStyle(fontSize: 11, color: Colors.white)),
                                     backgroundColor: _statusColor(t.status),
-                                  ),
+                                  )),
                                 ],
                               ),
                               if (t.status == TxStatus.pending) ...[
@@ -95,22 +96,22 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen> {
                                 Row(
                                   children: [
                                     Expanded(
-                                      child: OutlinedButton.icon(
+                                      child: TestId.button('doctor_decline_button_${t.id}', OutlinedButton.icon(
                                         key: Key('doctor_decline_button_${t.id}'),
                                         onPressed: () => _updateStatus(t.id, TxStatus.declined),
                                         icon: const Icon(Icons.close, size: 18),
                                         label: const Text('Decline'),
                                         style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-                                      ),
+                                      ), label: 'Decline'),
                                     ),
                                     const SizedBox(width: 8),
                                     Expanded(
-                                      child: FilledButton.icon(
+                                      child: TestId.button('doctor_accept_button_${t.id}', FilledButton.icon(
                                         key: Key('doctor_accept_button_${t.id}'),
                                         onPressed: () => _updateStatus(t.id, TxStatus.accepted),
                                         icon: const Icon(Icons.check, size: 18),
                                         label: const Text('Accept'),
-                                      ),
+                                      ), label: 'Accept'),
                                     ),
                                   ],
                                 ),
@@ -118,20 +119,20 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen> {
                                 const SizedBox(height: 10),
                                 SizedBox(
                                   width: double.infinity,
-                                  child: FilledButton.icon(
+                                  child: TestId.button('doctor_complete_button_${t.id}', FilledButton.icon(
                                     key: Key('doctor_complete_button_${t.id}'),
                                     onPressed: () => _updateStatus(t.id, TxStatus.completed),
                                     icon: const Icon(Icons.check_circle_outline, size: 18),
                                     label: const Text('Mark completed'),
-                                  ),
+                                  ), label: 'Mark completed'),
                                 ),
                               ],
                             ],
                           ),
                         ),
-                      );
+                      ));
                     },
-                  ),
+                  )),
                 ),
     );
   }

@@ -4,6 +4,7 @@ import 'doctor_dashboard_screen.dart';
 import 'doctor_patients_screen.dart';
 import 'doctor_appointments_screen.dart';
 import 'login_screen.dart';
+import '../widgets/test_id.dart';
 
 /// The doctor's own app experience — deliberately smaller than the admin's:
 /// no "add patient" or "add doctor" buttons anywhere, and no Doctors tab
@@ -42,12 +43,12 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
     ];
 
     final isWide = MediaQuery.of(context).size.width >= 800;
-    final logoutButton = IconButton(
+    final logoutButton = TestId.button('doctor_logout_button', IconButton(
       key: const Key('doctor_logout_button'),
       icon: const Icon(Icons.logout),
       tooltip: 'Log out',
       onPressed: _logout,
-    );
+    ), label: 'Log out');
 
     if (isWide) {
       return Scaffold(
@@ -77,12 +78,15 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
       key: const Key('doctor_home_screen'),
       appBar: AppBar(title: Text('Hi, ${widget.doctor.fullName}'), actions: [logoutButton]),
       body: screens[_index],
-      bottomNavigationBar: NavigationBar(
+      bottomNavigationBar: TestId.group('doctor_bottom_nav', NavigationBar(
         key: const Key('doctor_bottom_nav'),
         selectedIndex: _index,
         onDestinationSelected: (i) => setState(() => _index = i),
-        destinations: destinations,
-      ),
+        destinations: [
+          for (final d in destinations)
+            TestId.group('doctor_nav_${d.label.toLowerCase().replaceAll(' ', '_')}_tab', d),
+        ],
+      )),
     );
   }
 }

@@ -4,6 +4,7 @@ import 'patients_screen.dart';
 import 'doctors_screen.dart';
 import 'transactions_screen.dart';
 import 'login_screen.dart';
+import '../widgets/test_id.dart';
 
 /// The admin's own app experience. Admin is the only account that can turn
 /// a patient or doctor account active/inactive (via the Switch on each row
@@ -44,12 +45,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   @override
   Widget build(BuildContext context) {
     final isWide = MediaQuery.of(context).size.width >= 800;
-    final logoutButton = IconButton(
+    final logoutButton = TestId.button('admin_logout_button', IconButton(
       key: const Key('admin_logout_button'),
       icon: const Icon(Icons.logout),
       tooltip: 'Log out',
       onPressed: _logout,
-    );
+    ), label: 'Log out');
 
     if (isWide) {
       return Scaffold(
@@ -83,12 +84,15 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       key: const Key('admin_home_screen'),
       appBar: AppBar(title: const Text('Admin'), actions: [logoutButton]),
       body: _screens[_index],
-      bottomNavigationBar: NavigationBar(
+      bottomNavigationBar: TestId.group('admin_bottom_nav', NavigationBar(
         key: const Key('admin_bottom_nav'),
         selectedIndex: _index,
         onDestinationSelected: (i) => setState(() => _index = i),
-        destinations: _destinations,
-      ),
+        destinations: [
+          for (final d in _destinations)
+            TestId.group('admin_nav_${d.label.toLowerCase().replaceAll(' ', '_')}_tab', d),
+        ],
+      )),
     );
   }
 }

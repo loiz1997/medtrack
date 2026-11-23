@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/doctor.dart';
 import '../models/patient.dart';
 import '../services/database_helper.dart';
+import '../widgets/test_id.dart';
 
 /// A doctor only ever sees patients who have booked an appointment with
 /// them specifically — never the whole clinic's patient list. There is no
@@ -51,13 +52,13 @@ class _DoctorPatientsScreenState extends State<DoctorPatientsScreen> {
                 )
               : RefreshIndicator(
                   onRefresh: _load,
-                  child: ListView.builder(
+                  child: TestId.group('doctor_patients_list', ListView.builder(
                     key: const Key('doctor_patients_list'),
                     padding: const EdgeInsets.all(12),
                     itemCount: _patients.length,
                     itemBuilder: (context, i) {
                       final p = _patients[i];
-                      return Card(
+                      return TestId.group('doctor_patient_row_${p.id}', Card(
                         key: Key('doctor_patient_row_${p.id}'),
                         margin: const EdgeInsets.only(bottom: 8),
                         child: ListTile(
@@ -66,9 +67,9 @@ class _DoctorPatientsScreenState extends State<DoctorPatientsScreen> {
                           subtitle: Text('${p.condition} · ${p.age} yrs, ${p.gender}'),
                           trailing: Text(p.id, style: const TextStyle(fontFamily: 'monospace', fontSize: 12)),
                         ),
-                      );
+                      ));
                     },
-                  ),
+                  )),
                 ),
     );
   }
