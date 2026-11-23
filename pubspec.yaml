@@ -1,0 +1,44 @@
+name: medtrack
+description: "MedTrack — clinic patient and doctor registration, digitized from Excel."
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+
+  # Local offline-first storage — free, no server cost
+  sqflite: ^2.3.0
+  sqflite_common_ffi: ^2.3.0   # enables sqflite on Windows desktop
+  path: ^1.9.0
+  path_provider: ^2.1.2
+
+  # State management (free, no license)
+  provider: ^6.1.1
+
+  # Free-tier cloud sync — pick ONE and remove the other's package.
+  # Supabase:
+  supabase_flutter: ^2.3.4
+  # Firebase (comment out supabase_flutter above and uncomment these if using Firebase instead):
+  # firebase_core: ^2.27.0
+  # cloud_firestore: ^4.15.5
+  # firebase_auth: ^4.17.5
+
+  # CSV import/export for the Excel-migration feature
+  csv: 6.0.0
+  file_picker: 8.1.2
+  share_plus: ^12.0.2
+
+  intl: ^0.20.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
