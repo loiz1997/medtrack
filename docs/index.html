@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="MedTrack: clickable prototype and documentation of a Flutter clinic app for patients, doctors and admin.">
+<title>MedTrack Prototype</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+:root{
+  --bg:#f4f7f6; --surface:#ffffff; --fg:#10201a; --muted:#566660; --line:#dce5e1;
+  --accent:#0F6E56; --accent-ink:#ffffff; --accent-soft:#dff2ec;
+  --warn-bg:#fdf1d8; --warn-fg:#7a5200; --info-bg:#e0ecfb; --info-fg:#1d4a85;
+  --ok-bg:#dcf3e4; --ok-fg:#14602f; --bad-bg:#fbe3e1; --bad-fg:#9a2a22;
+  --frame:#17231f; --tid:#c2410c; --shadow:0 18px 40px rgba(16,32,26,.18);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0e1714; --surface:#16211d; --fg:#e8f1ed; --muted:#9db0a8; --line:#27362f;
+  --accent:#3fbf9c; --accent-ink:#06231a; --accent-soft:#17342b;
+  --warn-bg:#3a2d0c; --warn-fg:#f0c566; --info-bg:#16304f; --info-fg:#9fc4f2;
+  --ok-bg:#12351f; --ok-fg:#8fdcab; --bad-bg:#42201d; --bad-fg:#f2a8a2;
+  --frame:#050a08; --tid:#fb923c; --shadow:0 18px 40px rgba(0,0,0,.5); color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0e1714; --surface:#16211d; --fg:#e8f1ed; --muted:#9db0a8; --line:#27362f;
+  --accent:#3fbf9c; --accent-ink:#06231a; --accent-soft:#17342b;
+  --warn-bg:#3a2d0c; --warn-fg:#f0c566; --info-bg:#16304f; --info-fg:#9fc4f2;
+  --ok-bg:#12351f; --ok-fg:#8fdcab; --bad-bg:#42201d; --bad-fg:#f2a8a2;
+  --frame:#050a08; --tid:#fb923c; --shadow:0 18px 40px rgba(0,0,0,.5); color-scheme:dark }
+body{background:var(--bg);color:var(--fg);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;cursor:pointer}
+.wrap{max-width:1080px;margin:0 auto;padding-block:20px 56px}
+h1,h2,h3{font-family:"Space Grotesk",Inter,sans-serif;text-wrap:balance;line-height:1.2;margin:0}
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:36px;height:36px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:700;font-family:"Space Grotesk"}
+.brand h1{font-size:22px}
+.brand small{display:block;color:var(--muted);font-size:12.5px}
+.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px}
+.tabs button{border:0;background:none;padding:7px 16px;border-radius:999px;font-weight:600;font-size:14px;color:var(--muted)}
+.tabs button.on{background:var(--accent);color:var(--accent-ink)}
+
+/* stage */
+.stage{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:32px;align-items:start}
+@media(max-width:860px){.stage{grid-template-columns:minmax(0,1fr)}}
+.panel{display:flex;flex-direction:column;gap:16px;min-width:0}
+.pcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
+.pcard h3{font-size:15px;margin-bottom:10px}
+.lbl{font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:8px}
+.row{display:flex;flex-wrap:wrap;gap:8px}
+.pb{border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:7px 12px;font-size:13.5px;font-weight:500}
+.pb:hover{border-color:var(--accent)}
+.pb.pri{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.say{font-size:15px;margin:0}
+.steps{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.steps li{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:center}
+.steps .n{width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:700;font-size:13px}
+.steps b{display:block;font-size:14px}.steps span.d{font-size:13px;color:var(--muted)}
+.readout{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;min-height:22px;color:var(--tid);word-break:break-all}
+.sw-line{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.88em;background:var(--accent-soft);color:var(--fg);padding:1px 6px;border-radius:6px;word-break:break-word}
+.scroll{overflow-x:auto}
+
+/* phone */
+.phone{width:340px;max-width:100%;height:680px;border-radius:40px;background:var(--frame);padding:10px;box-shadow:var(--shadow);margin:0 auto;position:relative}
+.screen{height:100%;border-radius:31px;background:var(--bg);overflow:hidden;display:flex;flex-direction:column;position:relative;color:var(--fg)}
+.sb{height:28px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 20px;font-size:12px;font-weight:600}
+.sb i{width:70px;height:18px;border-radius:12px;background:var(--frame)}
+.appbar{display:flex;align-items:center;gap:8px;padding:6px 14px 10px;flex:none}
+.appbar h2{flex:1;font-size:19px;font-family:Inter,sans-serif;font-weight:600}
+.lnk{border:0;background:none;color:var(--accent);font-weight:600;font-size:13px;padding:4px 2px}
+.pbody{flex:1;overflow:auto;padding:4px 14px 16px;display:flex;flex-direction:column;gap:10px}
+.nav{flex:none;display:flex;border-top:1px solid var(--line);background:var(--surface)}
+.nav button{flex:1;border:0;background:none;padding:11px 2px 12px;font-size:12px;color:var(--muted);border-top:2px solid transparent;margin-top:-1px}
+.nav button.on{color:var(--accent);font-weight:600;border-top-color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;min-width:0}
+.card h4{margin:0;font-size:15px;font-weight:600}
+.card p{margin:2px 0 0;color:var(--muted);font-size:13px;white-space:pre-line}
+.ctop{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.btn{border:0;background:var(--accent);color:var(--accent-ink);border-radius:22px;padding:11px 16px;font-weight:600;font-size:14px;width:100%}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line)}
+.btn.sm{width:auto;padding:7px 14px;font-size:12.5px}
+.btn.bad{background:var(--bad-bg);color:var(--bad-fg)}
+.acts{display:flex;gap:8px;margin-top:10px;justify-content:flex-end}
+.fld{display:grid;gap:4px;font-size:12.5px;color:var(--muted);font-weight:500}
+.fld input,.fld textarea{font:inherit;font-size:14.5px;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-width:0}
+.fld input[readonly]{opacity:.6}
+.fld input:focus,.fld textarea:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 13px;font-size:13px}
+.seg button.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
+.chip{font-size:11.5px;font-weight:600;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.chip.pending{background:var(--warn-bg);color:var(--warn-fg)}
+.chip.accepted{background:var(--info-bg);color:var(--info-fg)}
+.chip.completed{background:var(--ok-bg);color:var(--ok-fg)}
+.chip.declined,.chip.inactive{background:var(--bad-bg);color:var(--bad-fg)}
+.chip.active{background:var(--ok-bg);color:var(--ok-fg)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px}
+.stat b{display:block;font-size:26px;font-family:"Space Grotesk";line-height:1.1;color:var(--accent)}
+.stat span{font-size:12.5px;color:var(--muted)}
+.err{background:var(--bad-bg);color:var(--bad-fg);border-radius:10px;padding:9px 12px;font-size:13px}
+.note{background:var(--ok-bg);color:var(--ok-fg);border-radius:10px;padding:9px 12px;font-size:13px}
+.empty{text-align:center;color:var(--muted);padding:30px 10px;font-size:14px}
+.sec{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:6px 2px 0}
+.sw{width:42px;height:24px;border-radius:12px;border:0;background:var(--line);position:relative;flex:none;padding:0}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .15s}
+.sw.on{background:var(--accent)}.sw.on::after{transform:translateX(18px)}
+.toast{position:absolute;left:14px;right:14px;bottom:70px;background:var(--fg);color:var(--bg);border-radius:12px;padding:10px 14px;font-size:13px;text-align:center}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:11px 12px}
+.opt.on{border-color:var(--accent);background:var(--accent-soft)}
+.opt i{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);flex:none;margin-top:2px}
+.opt.on i{border-color:var(--accent);background:radial-gradient(var(--accent) 45%,transparent 50%)}
+.hero{text-align:center;padding:14px 0 4px}
+.hero .logo{margin:0 auto 8px;width:52px;height:52px;font-size:22px;border-radius:16px}
+.hero h3{font-size:22px}.hero p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.ids [data-tid]{outline:1.5px dashed var(--tid);outline-offset:1px}
+.ids [data-tid]:hover{background-color:color-mix(in srgb,var(--tid) 14%,transparent)}
+.static{pointer-events:none}
+
+/* docs */
+.docs{display:grid;gap:44px}
+.docs section{scroll-margin-top:16px;min-width:0}
+.docs h2{font-size:26px;margin-bottom:6px}
+.docs h3{font-size:17px;margin:20px 0 6px}
+.docs p{max-width:68ch;margin:8px 0}
+.lede{color:var(--muted);max-width:62ch}
+.hero-d{padding:8px 0 4px}
+.hero-d h2{font-size:clamp(28px,5vw,40px)}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:14px}
+.dcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}
+.dcard h3{margin-top:0}
+.dcard ul{margin:6px 0 0;padding-left:18px;color:var(--muted);font-size:14px}
+.gallery{display:flex;flex-wrap:wrap;gap:22px;margin-top:16px}
+.shot{width:215px;min-width:0}
+.shotbox{width:215px;height:430px;overflow:hidden;border-radius:26px}
+.shotbox .phone{transform:scale(.63);transform-origin:top left;width:340px;max-width:none;height:680px;flex:none;margin:0}
+.shot figcaption{font-size:13px;margin-top:8px}
+.shot figcaption b{display:block;font-size:14px}
+.shot figcaption span{color:var(--muted);font-size:12px;word-break:break-word}
+.tick{color:var(--accent);font-weight:700}.dash{color:var(--muted)}
+details{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin-top:10px}
+summary{cursor:pointer;font-weight:600}
+details ol,details ul{color:var(--muted);font-size:14px;padding-left:20px}
+pre.mermaid{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;overflow-x:auto;margin:14px 0}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.toc a{color:var(--fg);text-decoration:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 13px;font-size:13.5px}
+.toc a:hover{border-color:var(--accent)}
+.callout{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 12px 12px 0;max-width:68ch;font-size:14px}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0}
+.flow .b{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 12px;font-size:13.5px}
+.flow .a{color:var(--muted);font-size:12.5px}
+.gh{color:var(--fg);text-decoration:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-size:14px;font-weight:600}
+.gh:hover{border-color:var(--accent)}
+.actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><div class="logo">M</div><div><h1>MedTrack</h1><small>Clinic app for patients, doctors and admin</small></div></div>
+    <div class="actions"><a class="gh" href="https://github.com/loiz1997/medtrack" target="_blank" rel="noopener">View on GitHub</a>
+    <div class="tabs" role="tablist">
+      <button id="tab-prototype" role="tab" class="on">Prototype</button>
+      <button id="tab-docs" role="tab">Documentation</button>
+    </div></div>
+  </div>
+
+  <div id="view-prototype">
+    <div class="stage">
+      <div>
+        <div id="phone-mount"></div>
+        <div class="readout" id="readout" aria-live="polite"></div>
+      </div>
+      <div class="panel" id="panel"></div>
+    </div>
+  </div>
+
+  <div id="view-docs" hidden></div>
+</div>
+
+<script>
+const $=(q,r=document)=>r.querySelector(q);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const T=id=>'data-tid="'+id+'"';
+
+/* ---------- data ---------- */
+const seed=()=>({
+  n:{p:5,d:4,t:5},
+  doctors:[
+    {id:'DR-001',name:'Dr. Ana Reyes',specialty:'Cardiology',schedule:'Mon–Fri · 9:00–15:00',active:true},
+    {id:'DR-002',name:'Dr. Marco Santos',specialty:'Pediatrics',schedule:'Tue & Thu · 10:00–16:00',active:true},
+    {id:'DR-003',name:'Dr. Lea Cruz',specialty:'General Medicine',schedule:'Mon, Wed, Fri · 8:00–12:00',active:false}
+  ],
+  patients:[
+    {id:'PT-001',name:'Maria Dela Cruz',age:34,gender:'Female',phone:'0917 555 0101',condition:'Hypertension',active:true},
+    {id:'PT-002',name:'Jose Ramirez',age:52,gender:'Male',phone:'0917 555 0102',condition:'Type 2 diabetes',active:true},
+    {id:'PT-003',name:'Ella Tan',age:7,gender:'Female',phone:'0917 555 0103',condition:'Asthma',active:true},
+    {id:'PT-004',name:'Ben Lim',age:41,gender:'Male',phone:'0917 555 0104',condition:'Back pain',active:false}
+  ],
+  tx:[
+    {id:'TX-001',pid:'PT-001',pname:'Maria Dela Cruz',did:'DR-001',dname:'Dr. Ana Reyes',type:'Consultation',amount:800,status:'Completed',date:'2026-11-10'},
+    {id:'TX-002',pid:'PT-002',pname:'Jose Ramirez',did:'DR-001',dname:'Dr. Ana Reyes',type:'Follow-up',amount:500,status:'Accepted',date:'2026-11-24'},
+    {id:'TX-003',pid:'PT-003',pname:'Ella Tan',did:'DR-002',dname:'Dr. Marco Santos',type:'Consultation',amount:600,status:'Pending',date:'2026-11-25'},
+    {id:'TX-004',pid:'PT-002',pname:'Jose Ramirez',did:'DR-003',dname:'Dr. Lea Cruz',type:'Consultation',amount:600,status:'Declined',date:'2026-11-12'}
+  ]
+});
+const fresh=()=>({data:seed(),screen:'login',role:null,uid:null,tab:'dash',loginRole:'patient',signupRole:'patient',
+  form:{},gender:'Female',err:'',notice:'',toast:'',filter:'All',sel:null,ids:false,static:false});
+let S=fresh();
+const P=(s,id)=>s.data.patients.find(x=>x.id===id);
+const D=(s,id)=>s.data.doctors.find(x=>x.id===id);
+const homeOf={patient:'pHome',doctor:'dHome',admin:'aHome'};
+
+/* ---------- ui helpers ---------- */
+const chip=st=>'<span class="chip '+st.toLowerCase()+'">'+st+'</span>';
+const fld=(s,tid,key,label,o={})=>{
+  const v=o.val!=null?o.val:(s.form[key]||'');
+  const inner=o.area?'<textarea rows="3" '+T(tid)+' data-in="'+key+'" placeholder="'+esc(o.ph||'')+'">'+esc(v)+'</textarea>'
+    :'<input '+T(tid)+' data-in="'+key+'" type="'+(o.type||'text')+'" placeholder="'+esc(o.ph||'')+'" value="'+esc(v)+'"'+(o.ro?' readonly':'')+'>';
+  return '<label class="fld"><span>'+label+'</span>'+inner+'</label>';
+};
+const seg=(items,cur,act,prefix,suffix)=>'<div class="seg">'+items.map(i=>
+  '<button class="'+(i.v===cur?'on':'')+'" data-act="'+act+'" data-v="'+i.v+'" '+T(prefix+i.v+suffix)+'>'+i.l+'</button>').join('')+'</div>';
+const bar=(title,o={})=>'<div class="appbar">'+(o.back?'<button class="lnk" data-act="back" '+T(o.back)+'>‹ Back</button>':'')+
+  '<h2>'+title+'</h2>'+(o.out?'<button class="lnk" data-act="logout" '+T(o.out)+'>Log out</button>':'')+'</div>';
+const nav=(items,cur,prefix)=>'<div class="nav">'+items.map(i=>
+  '<button class="'+(i.v===cur?'on':'')+'" data-act="tab" data-v="'+i.v+'" '+T(prefix+i.v+'_tab')+'>'+i.l+'</button>').join('')+'</div>';
+const sw=(on,kind,id)=>'<button class="sw '+(on?'on':'')+'" role="switch" aria-checked="'+on+'" data-act="toggle" data-kind="'+kind+'" data-id="'+id+'" '+T('admin_'+kind+'_active_toggle_'+id)+'></button>';
+const stat=(n,l,tid,act,v)=>'<button class="stat" '+T(tid)+(act?' data-act="'+act+'"':'')+'><b>'+n+'</b><span>'+l+'</span></button>';
+const gSeg=(s,pre)=>seg([{v:'Female',l:'Female'},{v:'Male',l:'Male'},{v:'Other',l:'Other'}],s.gender,'gender',pre,'_option');
+
+/* ---------- screens ---------- */
+const screens={
+login(s){
+  const r=s.loginRole;
+  const L={patient:['Patient ID','Phone number','PT-001','0917 555 0101'],doctor:['Doctor ID','Access code','DR-001','001'],admin:['Username','Password','Admin','••••••••']}[r];
+  return '<div class="pbody"><div class="hero"><div class="logo">M</div><h3>MedTrack</h3><p>Clinic appointments, simplified</p></div>'+
+    seg([{v:'patient',l:'Patient'},{v:'doctor',l:'Doctor'},{v:'admin',l:'Admin'}],r,'lrole','login_role_','_tab')+
+    (s.notice?'<div class="note" '+T('login_notice_text')+'>'+esc(s.notice)+'</div>':'')+
+    fld(s,'login_'+r+'_id_input','l_id',L[0],{ph:L[2]})+
+    fld(s,'login_'+r+'_secret_input','l_sec',L[1],{ph:L[3],type:r==='admin'?'password':'text'})+
+    (s.err?'<div class="err" '+T('login_error_text')+'>'+esc(s.err)+'</div>':'')+
+    '<button class="btn" data-act="login" '+T('login_'+r+'_submit_button')+'>Log in</button>'+
+    (r!=='admin'?'<button class="lnk" data-act="goto" data-v="signup" '+T('login_signup_link')+'>New here? Sign up</button>':'')+'</div>';
+},
+signup(s){
+  const r=s.signupRole;
+  return bar('Sign up',{back:'signup_back_link'})+'<div class="pbody">'+
+    seg([{v:'patient',l:'Patient'},{v:'doctor',l:'Doctor'}],r,'srole','signup_role_','_tab')+
+    fld(s,'signup_name_input','s_name','Full name',{ph:'e.g. Carla Mendoza'})+
+    (r==='patient'?
+      fld(s,'signup_age_input','s_age','Age',{ph:'29',type:'number'})+
+      '<div class="fld"><span>Gender</span>'+gSeg(s,'signup_gender_')+'</div>'+
+      fld(s,'signup_phone_input','s_phone','Contact number',{ph:'0917 555 0188'})+
+      fld(s,'signup_condition_input','s_cond','Condition',{ph:'e.g. Migraine'})
+    :
+      fld(s,'signup_specialty_input','s_spec','Specialty',{ph:'e.g. Dermatology'})+
+      fld(s,'signup_schedule_input','s_sched','Schedule',{ph:'e.g. Mon–Fri · 9:00–15:00'}))+
+    (s.err?'<div class="err" '+T('signup_error_text')+'>'+esc(s.err)+'</div>':'')+
+    '<button class="btn" data-act="signup" '+T('signup_submit_button')+'>Create account</button></div>';
+},
+pHome(s){
+  const p=P(s,s.uid), mine=s.data.tx.filter(t=>t.pid===p.id).slice().reverse();
+  return bar('Hi, '+esc(p.name),{out:'patient_logout_button'}).replace('<h2>','<h2 '+T('patient_home_greeting_text')+'>')+'<div class="pbody">'+
+    '<div class="card"><h4>'+esc(p.id)+'</h4><p>'+esc(p.condition)+' · '+p.age+' yrs, '+p.gender+'</p></div>'+
+    '<button class="btn" data-act="goto" data-v="pBook" '+T('patient_book_button')+'>Book an appointment</button>'+
+    '<button class="btn ghost" data-act="goto" data-v="pEdit" '+T('patient_edit_profile_button')+'>Edit profile</button>'+
+    '<div class="sec">My appointments</div>'+
+    (mine.length?mine.map(t=>'<div class="card" '+T('patient_appointment_card_'+t.id)+'><div class="ctop"><div><h4>'+esc(t.dname)+'</h4><p>'+esc(t.type)+' · '+t.date+'</p></div><span '+T('patient_appointment_status_'+t.id)+'>'+chip(t.status)+'</span></div></div>').join('')
+      :'<div class="empty">No appointments yet</div>')+'</div>';
+},
+pBook(s){
+  const docs=s.data.doctors.filter(d=>d.active);
+  return bar('Book an appointment',{back:'book_back_button'})+'<div class="pbody">'+
+    (docs.length?'<div class="sec">Choose a doctor</div>'+docs.map(d=>'<button class="opt '+(s.sel===d.id?'on':'')+'" data-act="pick" data-v="'+d.id+'" '+T('book_doctor_option_'+d.id)+'><i></i><div><h4 style="margin:0;font-size:15px">'+esc(d.name)+'</h4><p style="margin:2px 0 0;color:var(--muted);font-size:13px;white-space:pre-line">'+esc(d.specialty)+'\n'+esc(d.schedule)+'</p></div></button>').join('')
+      :'<div class="empty">No doctors are available to book right now. Please try again later.</div>')+
+    fld(s,'book_reason_input','b_reason','Reason for visit',{area:true,ph:'Tell the doctor what you need'})+
+    (s.err?'<div class="err" '+T('book_error_text')+'>'+esc(s.err)+'</div>':'')+
+    '<button class="btn" data-act="book" '+T('book_submit_button')+'>Request appointment</button></div>';
+},
+pEdit(s){
+  return bar('Edit profile',{back:'edit_back_button'})+'<div class="pbody">'+
+    fld(s,'edit_name_input','e_name','Full name',{ro:true})+
+    fld(s,'edit_age_input','e_age','Age',{type:'number'})+
+    '<div class="fld"><span>Gender</span>'+gSeg(s,'edit_gender_')+'</div>'+
+    fld(s,'edit_phone_input','e_phone','Contact number',{ro:true})+
+    '<p style="margin:0;font-size:12.5px;color:var(--muted)">Name and phone number can’t be changed here.</p>'+
+    '<button class="btn" data-act="saveProfile" '+T('edit_save_button')+'>Save changes</button></div>';
+},
+dHome(s){
+  const d=D(s,s.uid), mine=s.data.tx.filter(t=>t.did===d.id);
+  const tabs=[{v:'dash',l:'Dashboard'},{v:'patients',l:'My Patients'},{v:'appts',l:'Appointments'}];
+  const names={dash:'Dashboard',patients:'My Patients',appts:'Appointments'};
+  let body='';
+  if(s.tab==='dash'){
+    body='<div class="stats">'+
+      stat(s.data.patients.length,'Total patients','doctor_stat_total_patients_card','goto','dAll')+
+      stat(s.data.doctors.filter(x=>x.active).length,'Active doctors','doctor_stat_active_doctors_card','goto','dActive')+
+      stat(mine.filter(t=>t.status==='Pending').length,'My pending requests','doctor_stat_pending_card')+
+      stat(mine.length,'My total appointments','doctor_stat_total_appts_card')+'</div>'+
+      '<p style="margin:0;font-size:12.5px;color:var(--muted)">Tap Total patients or Active doctors to open the list.</p>';
+  } else if(s.tab==='patients'){
+    const ids=[...new Set(mine.map(t=>t.pid))].map(i=>P(s,i)).filter(Boolean);
+    body=ids.length?ids.map(p=>'<div class="card" '+T('doctor_patient_row_'+p.id)+'><h4>'+esc(p.name)+'</h4><p>'+esc(p.condition)+' · '+p.age+' yrs, '+p.gender+'</p></div>').join('')
+      :'<div class="empty">No patients have booked with you yet.</div>';
+  } else {
+    body=mine.length?mine.slice().reverse().map(t=>{
+      let a='';
+      if(t.status==='Pending') a='<button class="btn sm bad" data-act="txset" data-id="'+t.id+'" data-v="Declined" '+T('doctor_appt_decline_button_'+t.id)+'>Decline</button><button class="btn sm" data-act="txset" data-id="'+t.id+'" data-v="Accepted" '+T('doctor_appt_accept_button_'+t.id)+'>Accept</button>';
+      if(t.status==='Accepted') a='<button class="btn sm" data-act="txset" data-id="'+t.id+'" data-v="Completed" '+T('doctor_appt_complete_button_'+t.id)+'>Mark completed</button>';
+      return '<div class="card"><div class="ctop"><div><h4>'+esc(t.pname)+'</h4><p>'+esc(t.type)+' · '+t.date+'</p></div>'+chip(t.status)+'</div>'+(a?'<div class="acts">'+a+'</div>':'')+'</div>';
+    }).join(''):'<div class="empty">No appointments yet</div>';
+  }
+  return bar(names[s.tab],{out:'doctor_logout_button'})+'<div class="pbody">'+body+'</div>'+nav(tabs,s.tab,'doctor_nav_');
+},
+dActive(s){
+  const l=s.data.doctors.filter(d=>d.active);
+  return bar('Active doctors',{back:'active_back_button'})+'<div class="pbody">'+(l.length?l.map(d=>'<div class="card" '+T('active_doctor_row_'+d.id)+'><h4>'+esc(d.name)+'</h4><p>'+esc(d.specialty)+'\n'+esc(d.schedule)+'</p></div>').join(''):'<div class="empty">No active doctors right now</div>')+'</div>';
+},
+dAll(s){
+  const groups=s.data.doctors.map(d=>({t:d.name,l:[...new Set(s.data.tx.filter(t=>t.did===d.id).map(t=>t.pid))].map(i=>P(s,i))})).filter(g=>g.l.length);
+  const seen=new Set(s.data.tx.map(t=>t.pid));
+  const none=s.data.patients.filter(p=>!seen.has(p.id));
+  if(none.length) groups.push({t:'Not yet booked with a doctor',l:none});
+  return bar('All patients by doctor',{back:'all_patients_back_button'})+'<div class="pbody">'+(groups.length?groups.map(g=>'<div class="sec">'+esc(g.t)+'</div>'+g.l.map(p=>'<div class="card" '+T('all_patients_row_'+p.id)+'><h4>'+esc(p.name)+'</h4><p>'+esc(p.condition)+' · '+p.age+' yrs, '+p.gender+'</p></div>').join('')).join(''):'<div class="empty">No patients yet</div>')+'</div>';
+},
+aHome(s){
+  const tabs=[{v:'dash',l:'Dashboard'},{v:'patients',l:'Patients'},{v:'doctors',l:'Doctors'},{v:'tx',l:'Transactions'}];
+  const names={dash:'Dashboard',patients:'Patients',doctors:'Doctors',tx:'Transactions'};
+  const d=s.data; let body='';
+  const txRow=(t,act)=>'<div class="card"><div class="ctop"><div><h4>'+esc(t.pname)+'</h4><p>'+esc(t.type)+' · '+esc(t.dname)+'\n'+t.date+' · Amount '+t.amount.toLocaleString()+'</p></div>'+chip(t.status)+'</div>'+
+    (act&&t.status==='Pending'?'<div class="acts"><button class="btn sm bad" data-act="txset" data-id="'+t.id+'" data-v="Declined" '+T('admin_tx_decline_button_'+t.id)+'>Decline</button><button class="btn sm" data-act="txset" data-id="'+t.id+'" data-v="Accepted" '+T('admin_tx_accept_button_'+t.id)+'>Accept</button></div>':'')+'</div>';
+  if(s.tab==='dash'){
+    body='<div class="stats">'+stat(d.patients.length,'Total patients','admin_stat_total_patients_card')+stat(d.doctors.filter(x=>x.active).length,'Active doctors','admin_stat_active_doctors_card')+
+      stat(d.tx.filter(t=>t.status==='Pending').length,'Pending transactions','admin_stat_pending_card')+'</div><div class="sec">Recent transactions</div>'+
+      d.tx.slice().reverse().slice(0,3).map(t=>txRow(t,false)).join('');
+  } else if(s.tab==='patients'){
+    body=d.patients.map(p=>'<div class="card" '+T('admin_patient_row_'+p.id)+'><div class="ctop"><div><h4>'+esc(p.name)+'</h4><p>'+p.id+' · '+esc(p.condition)+'</p></div>'+sw(p.active,'patient',p.id)+'</div><div style="margin-top:6px">'+chip(p.active?'Active':'Inactive')+'</div></div>').join('')+
+      '<button class="btn ghost" data-act="export" '+T('admin_patients_export_button')+'>Export patients (CSV)</button>';
+  } else if(s.tab==='doctors'){
+    body=d.doctors.map(x=>'<div class="card" '+T('admin_doctor_row_'+x.id)+'><div class="ctop"><div><h4>'+esc(x.name)+'</h4><p>'+x.id+' · '+esc(x.specialty)+'</p></div>'+sw(x.active,'doctor',x.id)+'</div><div style="margin-top:6px">'+chip(x.active?'Active':'Inactive')+'</div></div>').join('');
+  } else {
+    const f=s.filter, list=d.tx.slice().reverse().filter(t=>f==='All'||t.status===f);
+    body='<div class="seg">'+['All','Pending','Accepted','Completed','Declined'].map(x=>'<button class="'+(x===f?'on':'')+'" data-act="filter" data-v="'+x+'" '+T('admin_tx_filter_'+x.toLowerCase()+'_chip')+'>'+x+'</button>').join('')+'</div>'+
+      (list.length?list.map(t=>txRow(t,true)).join(''):'<div class="empty">No transactions in this view</div>');
+  }
+  return bar(names[s.tab],{out:'admin_logout_button'})+'<div class="pbody">'+body+'</div>'+nav(tabs,s.tab,'admin_nav_');
+}
+};
+
+function phone(s){
+  const html=screens[s.screen](s);
+  return '<div class="phone'+(s.ids?' ids':'')+(s.static?' static':'')+'"><div class="screen"><div class="sb"><span>9:41</span><i></i><span>●●● ▮</span></div>'+html+
+    (s.toast?'<div class="toast" role="status">'+esc(s.toast)+'</div>':'')+'</div></div>';
+}
+
+/* ---------- presenter panel ---------- */
+const SAY={
+ 'login:':'Start here. One login screen, three roles. Patients sign in with their ID and phone number, doctors with their ID and an access code, and admin with a username and password. Inactive accounts are blocked.',
+ 'signup:':'New patients and doctors register themselves. The app issues the ID. A doctor’s access code is the numeric part of the ID.',
+ 'pHome:':'A patient sees only their own details and requests, with the status of each one at a glance.',
+ 'pBook:':'Only active doctors can be booked. The request waits as Pending until the doctor responds.',
+ 'pEdit:':'Patients keep their own profile up to date. Name and phone number identify the account, so they stay locked.',
+ 'dHome:dash':'Four live counters for the doctor. Tap Total patients or Active doctors to drill in.',
+ 'dHome:patients':'Only patients who have booked with this doctor appear here.',
+ 'dHome:appts':'The doctor’s inbox. Accept or decline a pending request, then mark it completed after the visit.',
+ 'dActive:':'Directory of doctors who are currently active, with specialty and schedule.',
+ 'dAll:':'Every patient grouped by the doctor they booked with. Patients with no booking are listed separately.',
+ 'aHome:dash':'Clinic-wide numbers and the latest transactions in one place.',
+ 'aHome:patients':'Admin switches an account Active or Inactive. An inactive patient can no longer log in. Export gives an Excel-friendly CSV.',
+ 'aHome:doctors':'Same control for doctors. An inactive doctor disappears from the booking list.',
+ 'aHome:tx':'Every transaction, filterable by status. Pending ones can be accepted or declined here.'
+};
+const DEMO=[['Patient','PT-001','0917 555 0101'],['Patient (inactive)','PT-004','0917 555 0104'],['Doctor','DR-001','001'],['Admin','Admin','admin123@']];
+function panel(){
+  const key=S.screen+':'+((S.screen==='dHome'||S.screen==='aHome')?S.tab:'');
+  return '<div class="pcard"><div class="lbl">Say this</div><p class="say">'+(SAY[key]||'')+'</p></div>'+
+  '<div class="pcard"><div class="lbl">Start as</div><div class="row">'+
+    '<button class="pb" data-act="startAs" data-v="login">Login screen</button><button class="pb" data-act="startAs" data-v="patient">Patient</button>'+
+    '<button class="pb" data-act="startAs" data-v="doctor">Doctor</button><button class="pb" data-act="startAs" data-v="admin">Admin</button></div></div>'+
+  '<div class="pcard"><div class="lbl">Guided walkthrough</div><ol class="steps">'+
+    [['Patient books','Maria requests Dr. Reyes'],['Doctor accepts','Dr. Reyes handles the request'],['Admin oversees','Transactions and filters'],['Inactive is blocked','Ben Lim cannot log in']].map((x,i)=>
+      '<li><span class="n">'+(i+1)+'</span><div><b>'+x[0]+'</b><span class="d">'+x[1]+'</span></div><button class="pb" data-act="step" data-v="'+(i+1)+'">Go</button></li>').join('')+'</ol></div>'+
+  '<div class="pcard"><div class="sw-line"><span>Show test IDs <span style="color:var(--muted);font-size:12.5px">(hover an element)</span></span><button class="sw '+(S.ids?'on':'')+'" role="switch" aria-checked="'+S.ids+'" data-act="ids" aria-label="Show test IDs"></button></div>'+
+    '<div class="sw-line" style="margin-top:12px"><span>Reset demo data</span><button class="pb" data-act="reset">Reset</button></div></div>'+
+  '<div class="pcard"><div class="lbl">Demo accounts</div><div class="scroll"><table><tr><th>Role</th><th>ID / user</th><th>Secret</th></tr>'+DEMO.map(r=>'<tr><td>'+r[0]+'</td><td><code>'+r[1]+'</code></td><td><code>'+r[2]+'</code></td></tr>').join('')+'</table></div></div>';
+}
+
+/* ---------- actions ---------- */
+let toastTimer;
+function toast(m){S.toast=m;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{S.toast='';render()},2400)}
+function setScreen(sc,tab){S.screen=sc;if(tab)S.tab=tab;S.err='';S.toast=''}
+function loginAs(role,id){S.role=role;S.uid=id;S.form={};S.err='';S.notice='';setScreen(homeOf[role],'dash')}
+function startAs(v){
+  S.form={};S.err='';S.notice='';
+  if(v==='login'){S.role=null;S.uid=null;S.loginRole='patient';setScreen('login')}
+  if(v==='patient')loginAs('patient','PT-001');
+  if(v==='doctor')loginAs('doctor','DR-001');
+  if(v==='admin')loginAs('admin','admin');
+}
+function act(a,el){
+  const v=el.dataset.v, id=el.dataset.id;
+  switch(a){
+  case 'lrole':S.loginRole=v;S.err='';S.form={};break;
+  case 'srole':S.signupRole=v;S.err='';break;
+  case 'goto':
+    if(v==='pEdit'){const p=P(S,S.uid);S.form={e_name:p.name,e_age:String(p.age),e_phone:p.phone};S.gender=p.gender}
+    if(v==='pBook'){S.sel=null;S.form={}}
+    if(v==='signup'){S.form={};S.gender='Female'}
+    setScreen(v);break;
+  case 'back':
+    if(S.screen==='signup'){S.form={};setScreen('login')}
+    else{setScreen(homeOf[S.role],S.tab)}
+    break;
+  case 'logout':S.role=null;S.uid=null;S.form={};S.notice='';setScreen('login');S.loginRole='patient';break;
+  case 'tab':S.tab=v;S.toast='';break;
+  case 'gender':S.gender=v;break;
+  case 'pick':S.sel=v;S.err='';break;
+  case 'filter':S.filter=v;break;
+  case 'ids':S.ids=!S.ids;break;
+  case 'reset':{const ids=S.ids;S=fresh();S.ids=ids;break}
+  case 'startAs':startAs(v);break;
+  case 'step':step(+v);break;
+  case 'export':toast('Patients exported as CSV (demo)');break;
+  case 'login':doLogin();break;
+  case 'signup':doSignup();break;
+  case 'book':
+    if(!S.sel){S.err='Please choose a doctor first';break}
+    {const d=D(S,S.sel),p=P(S,S.uid);const n=S.data.n.t++;
+     S.data.tx.push({id:'TX-'+String(n).padStart(3,'0'),pid:p.id,pname:p.name,did:d.id,dname:d.name,type:'Consultation',amount:600,status:'Pending',date:'2026-11-26'});
+     S.form={};S.sel=null;setScreen('pHome');toast('Appointment request sent — waiting for the doctor to respond');}
+    break;
+  case 'saveProfile':{const p=P(S,S.uid);const age=parseInt(S.form.e_age,10);if(age>0)p.age=age;p.gender=S.gender;setScreen('pHome');toast('Profile updated');break}
+  case 'txset':{const t=S.data.tx.find(x=>x.id===id);t.status=v;toast('Appointment marked '+v);break}
+  case 'toggle':{const o=(el.dataset.kind==='patient'?P:D)(S,id);o.active=!o.active;toast((o.name)+' is now '+(o.active?'Active':'Inactive'));break}
+  }
+  render();
+}
+function doLogin(){
+  const r=S.loginRole,id=(S.form.l_id||'').trim().toUpperCase(),sec=(S.form.l_sec||'').trim();
+  if(!id||!sec){S.err='Please fill in both fields.';return}
+  if(r==='admin'){ if(id==='ADMIN'&&sec==='admin123@')return loginAs('admin','admin'); S.err='Invalid admin username or password.';return}
+  if(r==='patient'){
+    const p=P(S,id);
+    if(!p||p.phone.replace(/\D/g,'')!==sec.replace(/\D/g,'')){S.err='Invalid Patient ID or phone number.';return}
+    if(!p.active){S.err='This account is inactive. Please contact the clinic.';return}
+    return loginAs('patient',p.id);
+  }
+  const d=D(S,id);
+  if(!d||id.replace(/\D/g,'')!==sec){S.err='Invalid Doctor ID or access code.';return}
+  if(!d.active){S.err='This account is inactive. Please contact the clinic.';return}
+  loginAs('doctor',d.id);
+}
+function doSignup(){
+  const f=S.form,r=S.signupRole;
+  if(!(f.s_name||'').trim()){S.err='Please enter a full name.';return}
+  if(r==='patient'){
+    if(!(parseInt(f.s_age,10)>0)||!(f.s_phone||'').trim()){S.err='Please enter an age and a contact number.';return}
+    const id='PT-'+String(S.data.n.p++).padStart(3,'0');
+    S.data.patients.push({id,name:f.s_name.trim(),age:parseInt(f.s_age,10),gender:S.gender,phone:f.s_phone.trim(),condition:(f.s_cond||'').trim()||'Not specified',active:true});
+    S.notice='Account created. Your Patient ID is '+id+'. Log in with it and your phone number.';
+  } else {
+    if(!(f.s_spec||'').trim()){S.err='Please enter a specialty.';return}
+    const num=String(S.data.n.d++).padStart(3,'0'),id='DR-'+num;
+    S.data.doctors.push({id,name:'Dr. '+f.s_name.trim().replace(/^Dr\.?\s*/i,''),specialty:f.s_spec.trim(),schedule:(f.s_sched||'').trim()||'To be announced',active:true});
+    S.notice='Account created. Your Doctor ID is '+id+' and your access code is '+num+'.';
+  }
+  S.loginRole=r;S.form={};setScreen('login');
+}
+function step(n){
+  S.err='';S.notice='';S.form={};
+  if(n===1){loginAs('patient','PT-001');S.sel=null;setScreen('pBook')}
+  if(n===2){loginAs('doctor','DR-001');setScreen('dHome','appts')}
+  if(n===3){loginAs('admin','admin');setScreen('aHome','tx')}
+  if(n===4){S.role=null;S.uid=null;S.loginRole='patient';S.form={l_id:'PT-004',l_sec:'0917 555 0104'};setScreen('login');toast('Now press Log in')}
+}
+
+/* ---------- wiring ---------- */
+function render(){
+  const pm=$('#phone-mount');pm.innerHTML=phone(S);
+  $('#panel').innerHTML=panel();
+}
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-act]');
+  if(!el||el.closest('.static')||!el.closest('#view-prototype'))return;
+  act(el.dataset.act,el);
+});
+document.addEventListener('input',e=>{
+  const k=e.target.dataset&&e.target.dataset.in;
+  if(k&&e.target.closest('#view-prototype'))S.form[k]=e.target.value;
+});
+document.addEventListener('mouseover',e=>{
+  const el=e.target.closest('#phone-mount [data-tid]');
+  $('#readout').textContent=(S.ids&&el)?el.dataset.tid:'';
+});
+
+/* ---------- documentation ---------- */
+function gallery(){
+  const snaps=[
+   ['Login',{screen:'login',form:{l_id:'PT-001',l_sec:'0917 555 0101'}},'login_patient_id_input, login_patient_submit_button'],
+   ['Sign up',{screen:'signup',form:{s_name:'Carla Mendoza',s_age:'29',s_phone:'0917 555 0188',s_cond:'Migraine'}},'signup_patient_name_input, signup_patient_submit_button'],
+   ['Patient home',{screen:'pHome',role:'patient',uid:'PT-001'},'patient_book_appointment_fab, patient_appointment_card_TX-001'],
+   ['Book an appointment',{screen:'pBook',role:'patient',uid:'PT-001',sel:'DR-001',form:{b_reason:'Chest pain follow-up'}},'doctor_option_DR-001, submit_appointment_button'],
+   ['Doctor dashboard',{screen:'dHome',tab:'dash',role:'doctor',uid:'DR-001'},'doctor_dashboard_pending_card, doctor_nav_appointments_tab'],
+   ['Doctor appointments',{screen:'dHome',tab:'appts',role:'doctor',uid:'DR-001'},'doctor_accept_button_TX-002'],
+   ['Admin dashboard',{screen:'aHome',tab:'dash',role:'admin',uid:'admin'},'admin_dashboard_pending_card'],
+   ['Admin patients',{screen:'aHome',tab:'patients',role:'admin',uid:'admin'},'admin_patient_active_toggle_PT-001'],
+   ['Admin transactions',{screen:'aHome',tab:'tx',role:'admin',uid:'admin'},'admin_transaction_row_TX-003, admin_approve_transaction_TX-003']
+  ];
+  return '<div class="gallery">'+snaps.map(x=>{
+    const s=Object.assign(fresh(),x[1]);s.static=true;
+    if(s.screen==='dHome'&&s.tab==='appts'){/* ensure an actionable item */}
+    return '<figure class="shot" style="margin:0"><div class="shotbox">'+phone(s)+'</div><figcaption><b>'+x[0]+'</b><span>'+x[2].replace(/_/g,'_<wbr>')+'</span></figcaption></figure>';
+  }).join('')+'</div>';
+}
+function docs(){
+  const y='<span class="tick">●</span>',n='<span class="dash">–</span>';
+  return '<div class="docs">'+
+  '<section class="hero-d"><div class="lbl">Product documentation</div><h2>MedTrack: one app for the whole clinic visit</h2>'+
+  '<p class="lede">MedTrack is a mobile app for Android and iOS built with Flutter. Patients book appointments, doctors respond to them, and admin keeps the clinic’s records in order. It works offline and syncs to the cloud when a connection is available.</p>'+
+  '<div class="toc"><a href="#d-overview">Overview</a><a href="#d-roles">Roles</a><a href="#d-screens">Screens</a><a href="#d-flow">Appointment flow</a><a href="#d-data">Data &amp; sync</a><a href="#d-qa">For QA</a><a href="#d-run">Running it</a><a href="#d-scope">Scope</a></div></section>'+
+
+  '<section id="d-overview"><h2>Overview</h2><div class="grid3">'+
+   '<div class="dcard"><h3>Patients</h3><ul><li>Sign up and log in with ID and phone</li><li>Book an appointment with an active doctor</li><li>Follow the status of every request</li><li>Edit their own profile</li></ul></div>'+
+   '<div class="dcard"><h3>Doctors</h3><ul><li>Sign up and log in with ID and access code</li><li>See their patients and four live counters</li><li>Accept, decline and complete appointments</li></ul></div>'+
+   '<div class="dcard"><h3>Admin</h3><ul><li>Clinic dashboard with recent transactions</li><li>Switch patients and doctors Active or Inactive</li><li>Filter and review every transaction</li><li>Export patient records as CSV</li></ul></div></div></section>'+
+
+  '<section id="d-roles"><h2>Roles and permissions</h2><p class="lede">Each role signs in differently and sees a different home screen.</p><div class="scroll"><table>'+
+   '<tr><th>Capability</th><th>Patient</th><th>Doctor</th><th>Admin</th></tr>'+
+   '<tr><td>Sign in with</td><td>Patient ID + phone</td><td>Doctor ID + access code</td><td>Username + password</td></tr>'+
+   '<tr><td>Self sign-up</td><td>'+y+'</td><td>'+y+'</td><td>'+n+'</td></tr>'+
+   '<tr><td>Book an appointment</td><td>'+y+'</td><td>'+n+'</td><td>'+n+'</td></tr>'+
+   '<tr><td>Accept / decline / complete</td><td>'+n+'</td><td>'+y+'</td><td>Accept / decline</td></tr>'+
+   '<tr><td>Edit own profile</td><td>'+y+'</td><td>'+n+'</td><td>'+n+'</td></tr>'+
+   '<tr><td>View all patients</td><td>'+n+'</td><td>'+y+'</td><td>'+y+'</td></tr>'+
+   '<tr><td>Activate / deactivate accounts</td><td>'+n+'</td><td>'+n+'</td><td>'+y+'</td></tr>'+
+   '<tr><td>Export patients (CSV)</td><td>'+n+'</td><td>'+n+'</td><td>'+y+'</td></tr></table></div>'+
+   '<p class="callout">An inactive patient or doctor is blocked at login and an inactive doctor can’t be booked.</p></section>'+
+
+  '<section id="d-screens"><h2>Screen gallery</h2><p class="lede">The nine main screens, rendered from the same code as the interactive prototype. The caption under each screen lists sample test IDs.</p>'+gallery()+'</section>'+
+
+  '<section id="d-flow"><h2>Appointment lifecycle</h2><p class="lede">Every appointment is one transaction that moves through four statuses.</p>'+
+   '<div class="flow"><span class="b">Patient requests appointment</span><span class="a">→</span><span class="b"><span class="chip pending">Pending</span></span><span class="a">→ Doctor accepts →</span><span class="b"><span class="chip accepted">Accepted</span></span><span class="a">→ Doctor marks completed →</span><span class="b"><span class="chip completed">Completed</span></span></div><p style="color:var(--muted);font-size:14px">If the doctor declines a Pending request, it ends as <span class="chip declined">Declined</span>.</p></section>'+
+
+  '<section id="d-data"><h2>Data and sync</h2><p class="lede">The app stores everything on the phone first (SQLite), then mirrors it to a free-tier Supabase project. It keeps working with no connection.</p>'+
+   '<div class="scroll"><table><tr><th>Table</th><th>Main columns</th></tr>'+
+   '<tr><td><code>patients</code></td><td>id, full_name, age, gender, phone, condition, registered_at, photo_path, is_active, status</td></tr>'+
+   '<tr><td><code>doctors</code></td><td>id, full_name, specialty, schedule, is_active, status</td></tr>'+
+   '<tr><td><code>transactions</code></td><td>id, patient_id, patient_name, doctor_id, doctor_name, type, amount, status, visit_date</td></tr>'+
+   '<tr><td><code>audit_log</code></td><td>record of changes made in the app</td></tr></table></div>'+
+   '<h3>How syncing works</h3><ul style="color:var(--muted);max-width:68ch"><li>After a change, the app pushes it to the cloud.</li><li>When the app starts, it pulls the latest cloud data.</li><li>Changed rows are flagged until they are pushed, and sync errors are shown rather than hidden.</li></ul></section>'+
+
+  '<section id="d-qa"><h2>For QA: test IDs</h2><p>Every tappable element and input carries a unique test ID, so automation tools such as Katalon Studio can find it on both Android and iOS. Turn on <b>Show test IDs</b> in the prototype to see the naming style. The exact IDs used by the app are listed in <code>docs/MedTrack_Test_IDs.xlsx</code> in the GitHub repo.</p>'+
+   '<div class="scroll"><table><tr><th>Pattern</th><th>Example</th></tr>'+
+   '<tr><td><code>&lt;screen&gt;_&lt;what&gt;_&lt;type&gt;</code></td><td><code>patient_save_profile_button</code></td></tr>'+
+   '<tr><td><code>login_{role}_submit_button</code></td><td><code>login_admin_submit_button</code></td></tr>'+
+   '<tr><td><code>admin_{kind}_active_toggle_{id}</code></td><td><code>admin_patient_active_toggle_PT-001</code></td></tr>'+
+   '<tr><td><code>doctor_accept_button_{txid}</code></td><td><code>doctor_accept_button_TX-002</code></td></tr></table></div>'+
+   '<p class="callout">In the Flutter app these IDs are published with <code>Semantics(identifier:)</code>, because Appium can’t see a Flutter <code>Key</code>. Every screen of the app uses these IDs, so tests can find each element reliably on both platforms.</p></section>'+
+
+  '<section id="d-run"><h2>Running the app</h2>'+
+   '<details><summary>iOS Simulator and a real iPhone</summary><ol><li>Install Xcode, Flutter and CocoaPods.</li><li>Run <code>flutter clean</code>, <code>flutter pub get</code>, <code>flutter create .</code>, then <code>pod install</code> inside <code>ios</code>.</li><li>Run <code>flutter run</code> for the simulator, or pick your iPhone as the device.</li><li>With a free Apple ID the signing lasts about 7 days. After that, reinstall.</li></ol></details>'+
+   '<details><summary>Android emulator</summary><ol><li>Install Android Studio with SDK API 36 and Build-Tools 28.0.3.</li><li>Point Gradle at Android Studio’s bundled Java 17 in <code>android/gradle.properties</code>.</li><li>Create a Pixel emulator in Device Manager and start it.</li><li>Run <code>flutter run</code>. The APK is at <code>build/app/outputs/flutter-apk/app-debug.apk</code>.</li></ol></details>'+
+   '<details><summary>Technology stack (all free)</summary><ul><li>Flutter and Dart, Material 3</li><li>SQLite on the device (sqflite)</li><li>Supabase free tier for cloud storage</li><li>Appium drivers for test automation: XCUITest (iOS) and UiAutomator2 (Android)</li></ul></details></section>'+
+
+  '<section id="d-scope"><h2>About this prototype</h2><p>This is a clickable simulation for presentations. It runs entirely in the browser, uses sample data and forgets your changes when the page reloads. It is not the Flutter app itself.</p>'+
+   '<p>The layout follows the app’s real screens and wording. A few small details, such as which fields are locked on Edit profile and the sample amounts, are illustrative and should be checked against the build.</p></section>'+
+  '</div>';
+}
+
+/* ---------- routing ---------- */
+let docsBuilt=false;
+function show(view){
+  const isDocs=view==='docs';
+  $('#view-prototype').hidden=isDocs;$('#view-docs').hidden=!isDocs;
+  $('#tab-prototype').classList.toggle('on',!isDocs);$('#tab-docs').classList.toggle('on',isDocs);
+  if(isDocs&&!docsBuilt){$('#view-docs').innerHTML=docs();docsBuilt=true}
+}
+$('#tab-prototype').onclick=()=>{location.hash='prototype'};
+$('#tab-docs').onclick=()=>{location.hash='docs'};
+window.addEventListener('hashchange',()=>show(location.hash==='#docs'?'docs':'prototype'));
+render();
+show(location.hash==='#docs'?'docs':'prototype');
+</script>
+
+</body>
+</html>
