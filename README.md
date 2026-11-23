@@ -6,7 +6,11 @@ I built MedTrack as a realistic **test target for mobile test automation** with 
 
 > **Demo project.** All patients, doctors and transactions in this repo are fictional sample data. Don't store real patient information in it.
 
+🌐 **Live demo (click through every screen in your browser):** [loiz1997.github.io/medtrack](https://loiz1997.github.io/medtrack/)
+
 📄 **Full documentation with every screen:** [docs/MedTrack_Documentation.pdf](docs/MedTrack_Documentation.pdf)
+
+> The live demo is an interactive prototype of the app's screens. The real app is the Flutter code in this repo.
 
 ---
 
@@ -41,7 +45,7 @@ lib/
   services/      Local database helper and Supabase sync service
   widgets/       Shared UI widgets
 backend/         SQL for the Supabase tables
-docs/            Product documentation (PDF)
+docs/            Documentation (PDF), live demo page, test cases and test ID list
 ```
 
 ## Getting started
@@ -90,7 +94,7 @@ The admin password is a **demo credential only**. Patients and doctors are creat
 
 MedTrack was built to be easy to automate.
 
-- **Test IDs:** UI elements follow a naming pattern such as `login_patient_id_input`, `login_admin_submit_button` and `admin_patient_active_toggle_PT-001`. In Flutter these are published with `Semantics(identifier: ...)`, because Appium can't see a Flutter `Key`. The login screen already uses them, and I'm rolling the same change out to the remaining screens.
+- **Test IDs:** UI elements follow a naming pattern such as `login_patient_id_input`, `login_admin_submit_button` and `admin_patient_active_toggle_PT-001`. In Flutter these are published with `Semantics(identifier: ...)`, because Appium can't see a Flutter `Key`. All screens use them, and the full list is in [docs/MedTrack_Test_IDs.xlsx](docs/MedTrack_Test_IDs.xlsx).
 - **Manual test suite:** 60 test cases across the patient, doctor and admin modules (happy path, negative and edge cases, tagged smoke / sanity / regression) in [docs/MedTrack_Test_Cases.xlsx](docs/MedTrack_Test_Cases.xlsx).
 - **Targets tested:** iOS Simulator, a real iPhone, and an Android emulator.
 
@@ -106,4 +110,4 @@ On Android, Gradle needs Java 17 or newer. If Gradle ignores a fix, run `./gradl
 
 ## Status
 
-This is a portfolio and testing project. Planned next steps: unique test IDs on every screen, row-level security rules for Supabase that match each role, and screenshots in this README.
+This is a portfolio and testing project. Planned next steps: a Katalon Studio test framework that automates the test cases (web, API and mobile), and row-level security rules for Supabase that match each role.
