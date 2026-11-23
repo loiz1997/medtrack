@@ -1,69 +1,109 @@
-# MedTrack — Flutter project
+# MedTrack
 
-A clinic patient/doctor registration and transaction app, replacing manual Excel sheets.
-Runs on iOS and Windows from a single codebase, using an entirely free tool/package stack.
+A cross-platform clinic app (Android and iOS) built with Flutter. Patients book appointments, doctors respond to them, and an admin keeps the clinic's records in order. It works offline and syncs to the cloud when a connection is available.
 
-## Stack
+I built MedTrack as a realistic **test target for mobile test automation** with Katalon Studio and Appium, so it also includes a full manual test suite and a unique test ID scheme for UI elements.
 
-- **Flutter** — UI framework, one codebase for iOS + Windows
-- **sqflite** / **sqflite_common_ffi** — local, offline-first storage (works with zero internet)
-- **supabase_flutter** — free-tier cloud sync (swap for `cloud_firestore` if you prefer Firebase — see `lib/services/sync_service.dart`)
-- **csv** + **file_picker** — Excel migration (import existing `.csv` exports)
-- **provider** — lightweight state management
+> **Demo project.** All patients, doctors and transactions in this repo are fictional sample data. Don't store real patient information in it.
 
-None of these require a paid license. See the cost breakdown at the bottom.
+📄 **Full documentation with every screen:** [docs/MedTrack_Documentation.pdf](docs/MedTrack_Documentation.pdf)
+
+---
+
+## Features
+
+| Role | What they can do |
+|---|---|
+| **Patient** | Sign up, log in with Patient ID + phone number, book an appointment with an active doctor, follow the status of each request, edit their profile |
+| **Doctor** | Sign up, log in with Doctor ID + access code, see a dashboard with live counters, view their patients, accept / decline / complete appointments |
+| **Admin** | Log in with a username and password, see clinic-wide stats and recent transactions, switch patient and doctor accounts Active / Inactive, filter transactions by status, export patient records as CSV |
+
+Other behaviour worth knowing:
+
+- Inactive patients and doctors are blocked at login, and inactive doctors can't be booked.
+- Every appointment is a transaction with one of four statuses: **Pending → Accepted → Completed**, or **Declined**.
+- Doctor access code is the numeric part of the Doctor ID (for example `DR-001` → `001`).
+
+## Tech stack (all free)
+
+- **Flutter / Dart**, Material 3
+- **SQLite** on the device (`sqflite`) for offline-first storage
+- **Supabase** (free tier) for cloud sync: changes are pushed after they happen, and the latest data is pulled when the app starts
+- **Katalon Studio + Appium** (XCUITest on iOS, UiAutomator2 on Android) for test automation
 
 ## Project structure
 
 ```
 lib/
-  models/              Patient, Doctor, ClinicTransaction — plain Dart data classes
-  services/
-    database_helper.dart   SQLite schema + queries (source of truth on-device)
-    sync_service.dart      Pushes local changes to Supabase/Firebase when online
-  screens/
-    dashboard_screen.dart
-    patients_screen.dart   Search, register, and CSV import
-    doctors_screen.dart
-    transactions_screen.dart
-  main.dart              Responsive shell: side rail on Windows, bottom nav on iOS
+  config/        Supabase settings (secrets.example.dart is a template)
+  models/        Patient, doctor and transaction models
+  screens/       Login, sign-up, and patient / doctor / admin screens
+  services/      Local database helper and Supabase sync service
+  widgets/       Shared UI widgets
+backend/         SQL for the Supabase tables
+docs/            Product documentation (PDF)
 ```
 
 ## Getting started
 
-1. Install the Flutter SDK: https://docs.flutter.dev/get-started/install (free)
-2. `flutter pub get`
-3. Run on Windows: `flutter run -d windows` (requires "Desktop development with C++" workload in Visual Studio — Community edition is free)
-4. Run on iOS: `flutter run -d <simulator-or-device>` (requires Xcode, free from the Mac App Store; a physical-device build needs a Mac)
+### 1. Prerequisites
 
-## Connecting the free cloud backend
+- [Flutter SDK](https://docs.flutter.dev/get-started/install)
+- For iOS: Xcode and CocoaPods
+- For Android: Android Studio with an emulator (Android SDK API 36, and Java 17 or newer for Gradle)
+- A free [Supabase](https://supabase.com) account
 
-The app works fully offline with zero setup — SQLite handles everything locally.
-To add multi-device sync:
+### 2. Set up Supabase
 
-1. Create a free Supabase project at https://supabase.com (500 MB DB, no card required)
-2. Run `backend/supabase_schema.sql` (in the project root, one level up) in the Supabase SQL editor
-3. Uncomment the `SyncService.initSupabase(...)` call in `main.dart` and pass your project URL + anon key
-4. Call `SyncService.instance.syncAll()` whenever you want to push local changes up (e.g. on app resume)
+1. Create a new Supabase project.
+2. In the SQL Editor, run the SQL files in the `backend/` folder: the schema first, then the migration file.
+3. In **Project Settings → API**, copy your **Project URL** and **anon public key**.
 
-Prefer Firebase instead? See `backend/firestore_schema.md` for the equivalent Firestore
-collections and security rules — `sync_service.dart` is written as a thin wrapper so you
-can swap the Supabase calls for `cloud_firestore` calls without touching any screen code.
+### 3. Add your keys
 
-## Migrating your existing Excel sheet
+The real keys are intentionally **not** in this repository. Copy the template and fill it in:
 
-On the Patients screen, tap the import icon and pick a `.csv` file exported from Excel
-(File > Save As > CSV in Excel) with these columns: `name, age, gender, phone, condition`.
-Each row becomes a new patient record with an auto-generated ID.
+```bash
+cp lib/config/secrets.example.dart lib/config/secrets.dart
+```
 
-## Cost breakdown
+Then open `lib/config/secrets.dart` and replace the placeholders with your own Project URL and anon key. This file is listed in `.gitignore`, so it will never be committed.
 
-| Item | Cost |
-|---|---|
-| Flutter SDK, Dart, VS Code | Free |
-| All packages in `pubspec.yaml` | Free, open-source |
-| SQLite local storage | Free, no limits |
-| Supabase or Firebase free tier | Free at this scale |
-| Testing on iOS Simulator / Windows desktop | Free |
-| Publishing to the Apple App Store | $99/year (only if you want public App Store distribution) |
-| Distributing a Windows `.exe` directly (no Store) | Free |
+### 4. Run the app
+
+```bash
+flutter pub get
+flutter run
+```
+
+On iOS, run `pod install` inside the `ios` folder first if Flutter asks for it.
+
+## Demo login
+
+| Role | ID / username | Secret |
+|---|---|---|
+| Admin | `Admin` | `admin123@` |
+
+The admin password is a **demo credential only**. Patients and doctors are created from the **Sign up** screen. After signing up, the app shows the new ID (and a doctor's access code) to log in with.
+
+## Test automation
+
+MedTrack was built to be easy to automate.
+
+- **Test IDs:** UI elements follow a naming pattern such as `login_patient_id_input`, `login_admin_submit_button` and `admin_patient_active_toggle_PT-001`. In Flutter these are published with `Semantics(identifier: ...)`, because Appium can't see a Flutter `Key`. The login screen already uses them, and I'm rolling the same change out to the remaining screens.
+- **Manual test suite:** 60 test cases across the patient, doctor and admin modules (happy path, negative and edge cases, tagged smoke / sanity / regression) in [docs/MedTrack_Test_Cases.xlsx](docs/MedTrack_Test_Cases.xlsx).
+- **Targets tested:** iOS Simulator, a real iPhone, and an Android emulator.
+
+## Known setup notes
+
+A few packages are pinned because newer versions broke the build:
+
+- `file_picker` 8.1.2 (needs `compileSdk` 36 on Android)
+- `csv` 6.0.0
+- `share_plus` ^12.0.2
+
+On Android, Gradle needs Java 17 or newer. If Gradle ignores a fix, run `./gradlew --stop` and `./gradlew clean` inside the `android` folder.
+
+## Status
+
+This is a portfolio and testing project. Planned next steps: unique test IDs on every screen, row-level security rules for Supabase that match each role, and screenshots in this README.
